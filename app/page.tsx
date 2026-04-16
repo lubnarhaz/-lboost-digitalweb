@@ -34,6 +34,7 @@ import CountUpNumber from '@/components/CountUpNumber'
 import WalletMockup from '@/components/WalletMockup'
 import Footer from '@/components/Footer'
 import AnimatedSection, { AnimatedItem } from '@/components/AnimatedSection'
+import PortfolioStrip from '@/components/PortfolioStrip'
 
 // ── Typewriter ────────────────────────────────────────────────────────────────
 const TYPEWRITER_ITEMS = [
@@ -597,6 +598,11 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ════════════════════════════════════════════════
+          SECTION 3.5 — PORTFOLIO STRIP
+      ════════════════════════════════════════════════ */}
+      <PortfolioStrip />
 
       {/* ════════════════════════════════════════════════
           SECTION 4 — PACKS
