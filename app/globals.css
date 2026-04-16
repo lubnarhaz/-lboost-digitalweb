@@ -251,6 +251,164 @@ body {
   animation: waPulse 2.5s ease-in-out infinite;
 }
 
+/* ===== LENA CHATBOT WIDGET ===== */
+@keyframes lenaPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(201,168,76,0.2),
+      0 0 40px rgba(107,33,168,0.15),
+      0 8px 32px rgba(0,0,0,0.4);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(201,168,76,0.45),
+      0 0 60px rgba(107,33,168,0.3),
+      0 8px 32px rgba(0,0,0,0.4);
+  }
+}
+
+@keyframes badgePop {
+  0%   { transform: scale(0); }
+  70%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+@keyframes lenaDotBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+.lena-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #0D1B2A 100%);
+  border: 1px solid rgba(201,168,76,0.5);
+  border-radius: 16px;
+  padding: 10px 16px 10px 10px;
+  cursor: pointer;
+  animation: lenaPulse 3s ease-in-out infinite;
+  transition: all 0.3s ease;
+  min-width: 200px;
+}
+
+.lena-trigger:hover {
+  border-color: rgba(201,168,76,0.9);
+  box-shadow:
+    0 0 30px rgba(201,168,76,0.4),
+    0 0 60px rgba(107,33,168,0.3),
+    0 12px 40px rgba(0,0,0,0.5);
+  transform: translateY(-2px);
+}
+
+.lena-avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.lena-avatar {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 50% !important;
+  object-fit: cover;
+  border: 2px solid #C9A84C;
+}
+
+.lena-online-dot {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  width: 11px;
+  height: 11px;
+  background: #22c55e;
+  border-radius: 50%;
+  border: 2px solid #0D0D0D;
+  animation: lenaDotBlink 2s ease-in-out infinite;
+}
+
+.lena-trigger-text {
+  text-align: left;
+  flex: 1;
+}
+
+.lena-trigger-name {
+  color: #C9A84C;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+  font-family: var(--font-inter), sans-serif;
+}
+
+.lena-trigger-subtitle {
+  color: rgba(255,255,255,0.6);
+  font-size: 11px;
+  margin-top: 1px;
+  font-family: var(--font-inter), sans-serif;
+}
+
+.lena-bubble-icon {
+  font-size: 18px;
+  opacity: 0.8;
+}
+
+.lena-window {
+  border: 1px solid rgba(201,168,76,0.4);
+  border-radius: 20px;
+  box-shadow:
+    0 0 40px rgba(201,168,76,0.15),
+    0 0 80px rgba(107,33,168,0.1),
+    0 25px 60px rgba(0,0,0,0.6);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.lena-header {
+  background: linear-gradient(135deg, #C9A84C 0%, #6B21A8 100%);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ===== WHATSAPP CARD WIDGET ===== */
+.whatsapp-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #075E54, #128C7E);
+  border: 1px solid rgba(37,211,102,0.4);
+  border-radius: 14px;
+  padding: 10px 14px;
+  box-shadow:
+    0 0 20px rgba(37,211,102,0.2),
+    0 8px 24px rgba(0,0,0,0.4);
+  transition: all 0.3s ease;
+  color: white;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-inter), sans-serif;
+  white-space: nowrap;
+}
+
+.whatsapp-trigger:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 30px rgba(37,211,102,0.4),
+    0 12px 30px rgba(0,0,0,0.5);
+  border-color: rgba(37,211,102,0.7);
+}
+
+.whatsapp-green-dot {
+  width: 8px;
+  height: 8px;
+  background: #25D366;
+  border-radius: 50%;
+  animation: lenaDotBlink 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
 /* ===== CTA FUTURISTIC ANIMATIONS ===== */
 @keyframes gridPulse {
   0%, 100% { opacity: 0.3; }

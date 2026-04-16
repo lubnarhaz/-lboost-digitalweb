@@ -67,7 +67,6 @@ const SUGGESTIONS = [
   "🔍 Audit gratuit",
 ]
 
-// Avatar de Lena — femme professionnelle
 const LENA_AVATAR = 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=face'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -90,14 +89,11 @@ function getBotAnswer(input: string): string {
   return DEFAULT_ANSWER
 }
 
-// ── Lena Avatar component ─────────────────────────────────────────────────────
+// ── Lena Avatar ───────────────────────────────────────────────────────────────
 function LenaAvatar({ size = 36, online = true }: { size?: number; online?: boolean }) {
   return (
     <div className="relative flex-shrink-0" style={{ width: size, height: size }}>
-      <div
-        className="rounded-full overflow-hidden border-2 border-[#C9A84C]/60"
-        style={{ width: size, height: size }}
-      >
+      <div className="rounded-full overflow-hidden border-2 border-white/50" style={{ width: size, height: size }}>
         <Image
           src={LENA_AVATAR}
           alt="Lena — Conseillère L-BOOST"
@@ -124,52 +120,54 @@ export default function ChatbotLena() {
   const [typing, setTyping] = useState(false)
   const [welcomeShown, setWelcomeShown] = useState(false)
   const [showBubble, setShowBubble] = useState(false)
+  const [showBadge, setShowBadge] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const nextId = useRef(1)
 
-  // Auto-welcome after 3s
+  // Badge "1 message non lu" after 4s
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (!open) setShowBadge(true)
+    }, 4000)
+    return () => clearTimeout(t)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Auto-welcome + teaser bubble
   useEffect(() => {
     if (welcomeShown) return
     const t1 = setTimeout(() => {
       setWelcomeShown(true)
       pushBot(WELCOME)
     }, 3000)
-    // Show teaser bubble after 4s
     const t2 = setTimeout(() => {
       if (!open) setShowBubble(true)
-    }, 4000)
+    }, 4500)
     return () => { clearTimeout(t1); clearTimeout(t2) }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [welcomeShown])
 
-  // Hide bubble when chat opens
   useEffect(() => {
     if (open) setShowBubble(false)
   }, [open])
 
-  // Auto-hide bubble after 6s
   useEffect(() => {
     if (!showBubble) return
     const t = setTimeout(() => setShowBubble(false), 6000)
     return () => clearTimeout(t)
   }, [showBubble])
 
-  // Scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [msgs, typing])
 
-  // Focus input
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 200)
   }, [open])
 
   function pushBot(text: string) {
-    setMsgs((prev) => [
-      ...prev,
-      { id: nextId.current++, role: 'bot', text, ts: getTime() },
-    ])
+    setMsgs((prev) => [...prev, { id: nextId.current++, role: 'bot', text, ts: getTime() }])
   }
 
   function sendMessage(text: string) {
@@ -184,117 +182,148 @@ export default function ChatbotLena() {
     }, 900 + Math.random() * 500)
   }
 
+  const handleOpen = () => {
+    setShowBadge(false)
+    setOpen(true)
+  }
+
   return (
     <>
-      {/* Teaser bubble */}
+      {/* Teaser bubble — bottom right */}
       <AnimatePresence>
         {showBubble && !open && (
           <motion.div
-            initial={{ opacity: 0, x: -10, scale: 0.9 }}
+            initial={{ opacity: 0, x: 10, scale: 0.9 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: -10, scale: 0.9 }}
-            className="fixed bottom-[88px] left-6 z-50 bg-white rounded-2xl rounded-bl-none shadow-xl border border-gray-100 px-4 py-3 max-w-[200px]"
-            style={{ boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}
+            exit={{ opacity: 0, x: 10, scale: 0.9 }}
+            transition={{ duration: 0.2 }}
+            className="fixed z-[60] bg-white rounded-2xl rounded-br-none shadow-xl border border-gray-100 px-4 py-3 max-w-[210px]"
+            style={{ bottom: 110, right: 24, boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}
           >
             <p className="text-[#0A0A0A] text-xs font-inter leading-relaxed">
               👋 Bonjour ! Besoin d&apos;aide ? Je suis là !
             </p>
-            <div className="absolute -bottom-2 left-4 w-3 h-3 bg-white border-b border-l border-gray-100 rotate-45" />
+            <div className="absolute -bottom-2 right-4 w-3 h-3 bg-white border-b border-r border-gray-100 rotate-45" />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Floating button — human avatar */}
-      <motion.button
+      {/* Floating widget — bottom right */}
+      <motion.div
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 2.2, type: 'spring', stiffness: 240, damping: 16 }}
-        onClick={() => setOpen((v) => !v)}
-        className="fixed bottom-6 left-6 z-50 rounded-full shadow-2xl"
-        style={{
-          width: 56,
-          height: 56,
-          boxShadow: '0 8px 32px rgba(201,168,76,0.35), 0 2px 8px rgba(0,0,0,0.2)',
-        }}
-        whileHover={{ scale: 1.08 }}
-        whileTap={{ scale: 0.92 }}
-        aria-label={open ? 'Fermer le chat' : 'Parler à Lena, conseillère L-BOOST'}
+        style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 50 }}
       >
-        <AnimatePresence mode="wait">
-          {open ? (
-            <motion.div
-              key="close"
-              initial={{ rotate: -90, opacity: 0, scale: 0.7 }}
-              animate={{ rotate: 0, opacity: 1, scale: 1 }}
-              exit={{ rotate: 90, opacity: 0, scale: 0.7 }}
-              transition={{ duration: 0.2 }}
-              className="w-14 h-14 rounded-full bg-[#0D1B2A] flex items-center justify-center"
-            >
-              <X size={20} className="text-white" />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="avatar"
-              initial={{ rotate: 90, opacity: 0, scale: 0.7 }}
-              animate={{ rotate: 0, opacity: 1, scale: 1 }}
-              exit={{ rotate: -90, opacity: 0, scale: 0.7 }}
-              transition={{ duration: 0.2 }}
-              className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-[#C9A84C]"
-            >
+        {/* Badge notification */}
+        {showBadge && !open && (
+          <span
+            style={{
+              position: 'absolute',
+              top: -6,
+              right: -6,
+              background: '#ef4444',
+              color: 'white',
+              borderRadius: '50%',
+              width: 20,
+              height: 20,
+              fontSize: 11,
+              fontWeight: 'bold',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '2px solid #0D0D0D',
+              animation: 'badgePop 0.3s ease',
+              zIndex: 1,
+            }}
+          >
+            1
+          </span>
+        )}
+
+        {open ? (
+          /* Close button when chat is open */
+          <motion.button
+            initial={{ scale: 0.7, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            onClick={() => setOpen(false)}
+            className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg"
+            style={{ background: '#0D1B2A', border: '1px solid rgba(201,168,76,0.4)' }}
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.92 }}
+            aria-label="Fermer le chat"
+          >
+            <X size={20} className="text-white" />
+          </motion.button>
+        ) : (
+          /* Card-style trigger button */
+          <button
+            onClick={handleOpen}
+            className="lena-trigger"
+            aria-label="Parler à Lena, conseillère L-BOOST"
+          >
+            {/* Avatar + online dot */}
+            <div className="lena-avatar-wrapper">
               <Image
                 src={LENA_AVATAR}
-                alt="Lena, conseillère L-BOOST"
-                fill
-                className="object-cover"
-                sizes="56px"
+                alt="Lena"
+                width={44}
+                height={44}
+                className="lena-avatar"
               />
-              {/* Online dot */}
-              <span className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-green-400 border-2 border-white" />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.button>
+              <span className="lena-online-dot" />
+            </div>
 
-      {/* Chat window */}
+            {/* Text */}
+            <div className="lena-trigger-text">
+              <div className="lena-trigger-name">Lena <span>✨</span></div>
+              <div className="lena-trigger-subtitle">Assistante WalKin • En ligne</div>
+            </div>
+
+            {/* Bubble icon */}
+            <div className="lena-bubble-icon">💬</div>
+          </button>
+        )}
+      </motion.div>
+
+      {/* Chat window — opens upward from bottom-right */}
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.88, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.88, y: 20 }}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 280, damping: 26 }}
-            className="fixed bottom-24 left-6 z-50 flex flex-col overflow-hidden rounded-3xl border border-white/10"
+            className="lena-window"
             style={{
-              width: 320,
+              position: 'fixed',
+              bottom: 100,
+              right: 24,
+              width: 340,
               height: 480,
-              background: '#0D1B2A',
-              boxShadow: '0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(107,33,168,0.25)',
+              background: 'linear-gradient(180deg, #0D1B2A 0%, #0a0a0a 100%)',
+              zIndex: 9999,
             }}
             role="dialog"
             aria-label="Chat avec Lena, conseillère L-BOOST"
           >
-            {/* Header */}
-            <div
-              className="flex items-center justify-between px-4 py-3.5 border-b border-white/8"
-              style={{ background: 'linear-gradient(135deg, #0D1B2A 0%, #1a1a35 100%)' }}
-            >
-              <div className="flex items-center gap-3">
-                <LenaAvatar size={40} online />
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <p className="text-white font-semibold text-sm font-inter">Lena</p>
-                    <span className="text-[#C9A84C] text-[10px] font-inter">• L-BOOST</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                    <p className="text-white/40 text-[10px] font-inter">Conseillère digitale · En ligne</p>
-                  </div>
+            {/* Header — gold → violet gradient */}
+            <div className="lena-header">
+              <LenaAvatar size={40} online />
+              <div className="flex-1">
+                <div className="flex items-center gap-1.5">
+                  <p className="text-white font-semibold text-sm font-inter">Lena</p>
+                  <span className="text-white/80 text-[10px] font-inter">• L-BOOST</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                  <p className="text-white/80 text-[10px] font-inter">Conseillère digitale · En ligne</p>
                 </div>
               </div>
               <button
                 onClick={() => setOpen(false)}
-                className="text-white/40 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white/8"
-                aria-label="Réduire le chat"
+                className="text-white/70 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white/20"
+                aria-label="Fermer le chat"
               >
                 <Minimize2 size={15} />
               </button>
@@ -332,7 +361,7 @@ export default function ChatbotLena() {
                       {msg.ts}
                     </p>
 
-                    {/* Quick suggestions */}
+                    {/* Quick suggestions after welcome */}
                     {msg.role === 'bot' && msg.text === WELCOME && (
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {SUGGESTIONS.map((s) => (
@@ -350,7 +379,7 @@ export default function ChatbotLena() {
                 </motion.div>
               ))}
 
-              {/* Typing */}
+              {/* Typing indicator */}
               <AnimatePresence>
                 {typing && (
                   <motion.div
@@ -377,15 +406,20 @@ export default function ChatbotLena() {
             </div>
 
             {/* Input */}
-            <div className="px-3 py-3 border-t border-white/8 flex items-center gap-2" style={{ background: '#0D1B2A' }}>
+            <div
+              className="px-3 py-3 border-t border-white/8 flex items-center gap-2"
+              style={{ background: '#0D1B2A' }}
+            >
               <input
                 ref={inputRef}
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input) } }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input) }
+                }}
                 placeholder="Votre message..."
-                className="flex-1 bg-white/8 border border-white/12 rounded-xl px-3.5 py-2.5 text-white text-xs font-inter placeholder-white/30 focus:outline-none focus:border-[#7C3AED] transition-colors"
+                className="flex-1 bg-white/8 border border-white/12 rounded-xl px-3.5 py-2.5 text-white text-xs font-inter placeholder-white/30 focus:outline-none focus:border-[#C9A84C] transition-colors"
                 maxLength={300}
                 aria-label="Message à Lena"
               />
