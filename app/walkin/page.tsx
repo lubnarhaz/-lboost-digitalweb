@@ -11,10 +11,8 @@ import {
 } from 'lucide-react'
 
 import Navbar from '@/components/Navbar'
-import WhatsAppButton from '@/components/WhatsAppButton'
-import ContactModal from '@/components/ContactModal'
-import ChatbotLena from '@/components/ChatbotLena'
 import CountUpNumber from '@/components/CountUpNumber'
+import { useContactModal } from '@/context/ContactModalContext'
 import AnimatedSection from '@/components/AnimatedSection'
 import WalletCard from '@/components/walkin/WalletCard'
 import PushNotificationMockup from '@/components/walkin/PushNotificationMockup'
@@ -230,6 +228,7 @@ const walkinFaqs = [
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function WalkinPage() {
+  const { openModal } = useContactModal()
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
   // Boulangerie steps
@@ -494,10 +493,14 @@ export default function WalkinPage() {
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.45 }}
                 className="flex flex-col sm:flex-row gap-4"
               >
-                <ContactModal
-                  triggerLabel="Demander une démo gratuite"
-                  triggerClassName="btn-gold px-7 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 inline-flex"
-                />
+                <motion.button
+                  onClick={openModal}
+                  className="btn-gold px-7 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 inline-flex"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  Demander une démo gratuite
+                </motion.button>
                 <button
                   onClick={() => document.querySelector('#comment')?.scrollIntoView({ behavior: 'smooth' })}
                   className="text-white/70 hover:text-[#C9A84C] font-semibold text-base flex items-center gap-2 transition-colors"
@@ -946,9 +949,6 @@ export default function WalkinPage() {
         </div>
       </section>
 
-      <ContactModal />
-      <WhatsAppButton />
-      <ChatbotLena />
     </main>
   )
 }

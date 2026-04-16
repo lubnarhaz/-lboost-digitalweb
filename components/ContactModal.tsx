@@ -10,17 +10,19 @@ const GOOGLE_SCRIPT_URL =
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
 const TYPE_COMMERCE = [
-  { value: '', label: 'Type de commerce *' },
+  { value: '', label: '-- Sélectionnez votre activité --' },
   { value: 'Restaurant', label: 'Restaurant' },
   { value: 'Boutique', label: 'Boutique' },
   { value: 'Café/Bar', label: 'Café / Bar' },
   { value: 'Hôtel', label: 'Hôtel' },
   { value: 'Beauty/Spa', label: 'Beauty / Spa' },
+  { value: 'Salle de sport', label: 'Salle de sport' },
+  { value: 'Pharmacie', label: 'Pharmacie' },
   { value: 'Autre', label: 'Autre' },
 ]
 
 const NB_CLIENTS = [
-  { value: '', label: 'Clients par mois *' },
+  { value: '', label: '-- Sélectionnez une tranche --' },
   { value: 'Moins de 500', label: 'Moins de 500' },
   { value: '500-2000', label: '500 – 2 000' },
   { value: '2000-5000', label: '2 000 – 5 000' },
@@ -28,21 +30,33 @@ const NB_CLIENTS = [
 ]
 
 interface ContactModalProps {
+  /** Controlled mode — open state managed externally (e.g. from Context) */
+  isOpen?: boolean
+  onClose?: () => void
+  /** Standalone trigger mode — renders a button that opens the modal */
   triggerLabel?: string
   triggerClassName?: string
 }
 
 export default function ContactModal({
+  isOpen,
+  onClose,
   triggerLabel = 'Nous contacter',
   triggerClassName,
 }: ContactModalProps) {
-  const [open, setOpen] = useState(false)
+  const isControlled = isOpen !== undefined
+
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = isControlled ? (isOpen as boolean) : internalOpen
+  const handleClose = isControlled ? (onClose ?? (() => {})) : () => setInternalOpen(false)
+
   const [status, setStatus] = useState<Status>('idle')
   const [errors, setErrors] = useState<Record<string, string>>({})
   const firstInputRef = useRef<HTMLInputElement>(null)
 
   const [form, setForm] = useState({
     nom: '',
+    entreprise: '',
     email: '',
     telephone: '',
     typeCommerce: '',
@@ -50,7 +64,7 @@ export default function ContactModal({
     message: '',
   })
 
-  // Focus first input when modal opens
+  // Focus first input + lock scroll when modal opens
   useEffect(() => {
     if (open) {
       setTimeout(() => firstInputRef.current?.focus(), 100)
@@ -63,14 +77,15 @@ export default function ContactModal({
 
   // Close on Escape
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') handleClose() }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [])
+  })
 
   const validate = () => {
     const errs: Record<string, string> = {}
     if (!form.nom.trim()) errs.nom = 'Requis'
+    if (!form.entreprise.trim()) errs.entreprise = 'Requis'
     if (!form.email.trim()) errs.email = 'Requis'
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = 'Email invalide'
     if (!form.telephone.trim()) errs.telephone = 'Requis'
@@ -102,11 +117,13 @@ export default function ContactModal({
         body: JSON.stringify(form),
       })
       setStatus('success')
-      setForm({ nom: '', email: '', telephone: '', typeCommerce: '', nbClients: '', message: '' })
+      setForm({ nom: '', entreprise: '', email: '', telephone: '', typeCommerce: '', nbClients: '', message: '' })
     } catch {
       setStatus('error')
     }
   }
+
+  const labelClass = 'block text-white/70 text-xs font-semibold font-inter mb-1.5 tracking-wide'
 
   const inputClass = (field: string) =>
     `w-full bg-white/8 border rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm font-inter focus:outline-none transition-all duration-200 ${
@@ -126,20 +143,22 @@ export default function ContactModal({
 
   return (
     <>
-      {/* Trigger */}
-      <motion.button
-        onClick={() => { setOpen(true); setStatus('idle') }}
-        className={
-          triggerClassName ??
-          'inline-flex items-center gap-2 bg-[#6B21A8] hover:bg-[#7C3AED] text-white px-6 py-3.5 rounded-xl font-bold text-sm font-inter transition-all duration-300 shadow-lg hover:shadow-[0_0_20px_rgba(107,33,168,0.4)]'
-        }
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.97 }}
-        aria-label="Ouvrir le formulaire de contact"
-      >
-        <MessageCircle size={16} />
-        {triggerLabel}
-      </motion.button>
+      {/* Trigger button — only in standalone mode */}
+      {!isControlled && (
+        <motion.button
+          onClick={() => { setInternalOpen(true); setStatus('idle') }}
+          className={
+            triggerClassName ??
+            'inline-flex items-center gap-2 bg-[#6B21A8] hover:bg-[#7C3AED] text-white px-6 py-3.5 rounded-xl font-bold text-sm font-inter transition-all duration-300 shadow-lg hover:shadow-[0_0_20px_rgba(107,33,168,0.4)]'
+          }
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
+          aria-label="Ouvrir le formulaire de contact"
+        >
+          <MessageCircle size={16} />
+          {triggerLabel}
+        </motion.button>
+      )}
 
       {/* Modal overlay */}
       <AnimatePresence>
@@ -150,7 +169,7 @@ export default function ContactModal({
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4"
             style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
-            onClick={(e) => { if (e.target === e.currentTarget) setOpen(false) }}
+            onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
           >
             <motion.div
               initial={{ y: 60, opacity: 0, scale: 0.96 }}
@@ -161,7 +180,7 @@ export default function ContactModal({
               style={{ background: '#0D1B2A', boxShadow: '0 40px 100px rgba(0,0,0,0.6), 0 0 0 1px rgba(107,33,168,0.3)' }}
               role="dialog"
               aria-modal="true"
-              aria-label="Formulaire de contact WalKin"
+              aria-label="Formulaire de contact"
             >
               {/* Header */}
               <div className="flex items-center justify-between px-6 py-5 border-b border-white/8">
@@ -170,7 +189,7 @@ export default function ContactModal({
                   <p className="text-white/40 text-xs font-inter mt-0.5">Réponse garantie sous 24h</p>
                 </div>
                 <button
-                  onClick={() => setOpen(false)}
+                  onClick={handleClose}
                   className="w-9 h-9 rounded-xl bg-white/8 hover:bg-white/15 flex items-center justify-center text-white/60 hover:text-white transition-all"
                   aria-label="Fermer la modale"
                 >
@@ -194,7 +213,7 @@ export default function ContactModal({
                       ✅ On vous recontacte sous 24h.
                     </p>
                     <button
-                      onClick={() => { setOpen(false); setStatus('idle') }}
+                      onClick={() => { handleClose(); setStatus('idle') }}
                       className="mt-7 text-[#7C3AED] text-sm font-semibold font-inter hover:text-[#9F67FF] transition-colors"
                     >
                       Fermer →
@@ -202,13 +221,17 @@ export default function ContactModal({
                   </motion.div>
                 ) : (
                   <form onSubmit={handleSubmit} noValidate className="space-y-4">
-                    {/* Nom */}
+
+                    {/* Champ 1 — Prénom et Nom */}
                     <div>
+                      <label className={labelClass}>
+                        Prénom et Nom <span className="text-red-400">*</span>
+                      </label>
                       <input
                         ref={firstInputRef}
                         type="text"
                         name="nom"
-                        placeholder="Prénom et Nom *"
+                        placeholder="Ex : Marie Dupont"
                         value={form.nom}
                         onChange={handleChange}
                         className={inputClass('nom')}
@@ -217,13 +240,33 @@ export default function ContactModal({
                       {errors.nom && <p className="text-red-400 text-[11px] mt-1 font-inter pl-1">{errors.nom}</p>}
                     </div>
 
-                    {/* Email + Téléphone */}
+                    {/* Champ 2 — Entreprise */}
+                    <div>
+                      <label className={labelClass}>
+                        Nom de l&apos;entreprise ou du commerce <span className="text-red-400">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="entreprise"
+                        placeholder="Ex : Café de la Place, Boutique Élégance..."
+                        value={form.entreprise}
+                        onChange={handleChange}
+                        className={inputClass('entreprise')}
+                        autoComplete="organization"
+                      />
+                      {errors.entreprise && <p className="text-red-400 text-[11px] mt-1 font-inter pl-1">{errors.entreprise}</p>}
+                    </div>
+
+                    {/* Champ 3 & 4 — Email + Téléphone */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
+                        <label className={labelClass}>
+                          Email <span className="text-red-400">*</span>
+                        </label>
                         <input
                           type="email"
                           name="email"
-                          placeholder="Email *"
+                          placeholder="exemple@moncommerce.fr"
                           value={form.email}
                           onChange={handleChange}
                           className={inputClass('email')}
@@ -232,10 +275,13 @@ export default function ContactModal({
                         {errors.email && <p className="text-red-400 text-[11px] mt-1 font-inter pl-1">{errors.email}</p>}
                       </div>
                       <div>
+                        <label className={labelClass}>
+                          Téléphone <span className="text-red-400">*</span>
+                        </label>
                         <input
                           type="tel"
                           name="telephone"
-                          placeholder="Téléphone *"
+                          placeholder="06 XX XX XX XX"
                           value={form.telephone}
                           onChange={handleChange}
                           className={inputClass('telephone')}
@@ -245,9 +291,12 @@ export default function ContactModal({
                       </div>
                     </div>
 
-                    {/* Type commerce + Nb clients */}
+                    {/* Champ 5 & 6 — Type commerce + Nb clients */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
+                        <label className={labelClass}>
+                          Type de commerce <span className="text-red-400">*</span>
+                        </label>
                         <select
                           name="typeCommerce"
                           value={form.typeCommerce}
@@ -263,6 +312,9 @@ export default function ContactModal({
                         {errors.typeCommerce && <p className="text-red-400 text-[11px] mt-1 font-inter pl-1">{errors.typeCommerce}</p>}
                       </div>
                       <div>
+                        <label className={labelClass}>
+                          Volume de clients / mois <span className="text-red-400">*</span>
+                        </label>
                         <select
                           name="nbClients"
                           value={form.nbClients}
@@ -279,14 +331,17 @@ export default function ContactModal({
                       </div>
                     </div>
 
-                    {/* Message */}
+                    {/* Champ 7 — Message */}
                     <div>
+                      <label className={labelClass}>
+                        Décrivez votre besoin <span className="text-red-400">*</span>
+                      </label>
                       <textarea
                         name="message"
-                        placeholder="Décrivez votre besoin... *"
+                        placeholder="Ex : Je souhaite fidéliser mes clients avec une carte digitale, j'aimerais savoir comment WalKin peut m'aider..."
                         value={form.message}
                         onChange={handleChange}
-                        rows={3}
+                        rows={4}
                         className={`${inputClass('message')} resize-none`}
                       />
                       {errors.message && <p className="text-red-400 text-[11px] mt-1 font-inter pl-1">{errors.message}</p>}
@@ -305,6 +360,11 @@ export default function ContactModal({
                         </p>
                       </motion.div>
                     )}
+
+                    {/* Note confidentialité */}
+                    <p className="text-gray-400 text-xs font-inter">
+                      * Champs obligatoires — Vos données sont confidentielles et ne seront jamais partagées.
+                    </p>
 
                     {/* Submit */}
                     <motion.button
@@ -327,9 +387,6 @@ export default function ContactModal({
                       )}
                     </motion.button>
 
-                    <p className="text-white/20 text-[10px] font-inter text-center">
-                      Vos données sont utilisées uniquement pour vous recontacter.
-                    </p>
                   </form>
                 )}
               </div>

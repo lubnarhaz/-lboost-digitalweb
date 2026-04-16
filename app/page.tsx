@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import ContactModal from '@/components/ContactModal'
-import ChatbotLena from '@/components/ChatbotLena'
 import {
   Palette,
   Globe,
@@ -29,7 +27,6 @@ import ServiceCard from '@/components/ServiceCard'
 import PackCard from '@/components/PackCard'
 import CountUpNumber from '@/components/CountUpNumber'
 import WalletMockup from '@/components/WalletMockup'
-import WhatsAppButton from '@/components/WhatsAppButton'
 import Footer from '@/components/Footer'
 import AnimatedSection, { AnimatedItem } from '@/components/AnimatedSection'
 
@@ -926,9 +923,6 @@ export default function HomePage() {
       </section>
 
       <Footer />
-      <WhatsAppButton />
-      <ContactModal />
-      <ChatbotLena />
     </main>
   )
 }
