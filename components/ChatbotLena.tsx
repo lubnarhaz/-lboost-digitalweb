@@ -189,7 +189,7 @@ export default function ChatbotLena() {
 
   return (
     <>
-      {/* Teaser bubble — bottom right */}
+      {/* Teaser bubble */}
       <AnimatePresence>
         {showBubble && !open && (
           <motion.div
@@ -198,7 +198,7 @@ export default function ChatbotLena() {
             exit={{ opacity: 0, x: 10, scale: 0.9 }}
             transition={{ duration: 0.2 }}
             className="fixed z-[60] bg-white rounded-2xl rounded-br-none shadow-xl border border-gray-100 px-4 py-3 max-w-[210px]"
-            style={{ bottom: 110, right: 24, boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}
+            style={{ bottom: 110, right: 20, boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}
           >
             <p className="text-[#0A0A0A] text-xs font-inter leading-relaxed">
               👋 Bonjour ! Besoin d&apos;aide ? Je suis là !
@@ -208,20 +208,20 @@ export default function ChatbotLena() {
         )}
       </AnimatePresence>
 
-      {/* Floating widget — bottom right */}
+      {/* ── Floating trigger — bottom right ── */}
       <motion.div
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 2.2, type: 'spring', stiffness: 240, damping: 16 }}
-        style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 50 }}
+        className="fixed bottom-6 right-4 md:right-6 z-50"
       >
         {/* Badge notification */}
         {showBadge && !open && (
           <span
             style={{
               position: 'absolute',
-              top: -6,
-              right: -6,
+              top: -4,
+              right: -4,
               background: '#ef4444',
               color: 'white',
               borderRadius: '50%',
@@ -242,7 +242,7 @@ export default function ChatbotLena() {
         )}
 
         {open ? (
-          /* Close button when chat is open */
+          /* Close button — same on mobile & desktop */
           <motion.button
             initial={{ scale: 0.7, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -256,37 +256,60 @@ export default function ChatbotLena() {
             <X size={20} className="text-white" />
           </motion.button>
         ) : (
-          /* Card-style trigger button */
-          <button
-            onClick={handleOpen}
-            className="lena-trigger"
-            aria-label="Parler à Lena, conseillère L-BOOST"
-          >
-            {/* Avatar + online dot */}
-            <div className="lena-avatar-wrapper">
-              <Image
-                src={LENA_AVATAR}
-                alt="Lena"
-                width={44}
-                height={44}
-                className="lena-avatar"
+          <>
+            {/* ── Mobile trigger: round button with avatar ── */}
+            <button
+              onClick={handleOpen}
+              className="mobile-only relative w-14 h-14 rounded-full border-2 border-[#C9A84C] flex items-center justify-center cursor-pointer"
+              style={{
+                background: '#0D1B2A',
+                animation: 'lenaPulse 3s ease-in-out infinite',
+                boxShadow: '0 0 20px rgba(201,168,76,0.3), 0 4px 16px rgba(0,0,0,0.5)',
+              }}
+              aria-label="Parler à Lena, conseillère L-BOOST"
+            >
+              <div className="relative w-[44px] h-[44px] rounded-full overflow-hidden flex-shrink-0">
+                <Image
+                  src={LENA_AVATAR}
+                  alt="Lena"
+                  fill
+                  className="object-cover"
+                  sizes="44px"
+                />
+              </div>
+              <span
+                className="absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full bg-green-500 border-2 border-[#0D0D0D]"
+                style={{ animation: 'lenaDotBlink 2s ease-in-out infinite' }}
               />
-              <span className="lena-online-dot" />
-            </div>
+            </button>
 
-            {/* Text */}
-            <div className="lena-trigger-text">
-              <div className="lena-trigger-name">Lena <span>✨</span></div>
-              <div className="lena-trigger-subtitle">Assistante WalKin • En ligne</div>
-            </div>
-
-            {/* Bubble icon */}
-            <div className="lena-bubble-icon">💬</div>
-          </button>
+            {/* ── Desktop trigger: horizontal card ── */}
+            <button
+              onClick={handleOpen}
+              className="desktop-only lena-trigger"
+              aria-label="Parler à Lena, conseillère L-BOOST"
+            >
+              <div className="lena-avatar-wrapper">
+                <Image
+                  src={LENA_AVATAR}
+                  alt="Lena"
+                  width={44}
+                  height={44}
+                  className="lena-avatar"
+                />
+                <span className="lena-online-dot" />
+              </div>
+              <div className="lena-trigger-text">
+                <div className="lena-trigger-name">Lena <span>✨</span></div>
+                <div className="lena-trigger-subtitle">Assistante WalKin • En ligne</div>
+              </div>
+              <div className="lena-bubble-icon">💬</div>
+            </button>
+          </>
         )}
       </motion.div>
 
-      {/* Chat window — opens upward from bottom-right */}
+      {/* ── Chat window ── */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -294,13 +317,14 @@ export default function ChatbotLena() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 280, damping: 26 }}
-            className="lena-window"
+            className={[
+              'lena-window fixed flex flex-col overflow-hidden',
+              // Mobile: full-width bottom sheet
+              'bottom-0 left-0 right-0 w-full h-[70vh] rounded-t-[20px] rounded-b-none',
+              // Desktop: corner popup
+              'md:bottom-[100px] md:left-auto md:right-6 md:w-[340px] md:h-[480px] md:rounded-[20px]',
+            ].join(' ')}
             style={{
-              position: 'fixed',
-              bottom: 100,
-              right: 24,
-              width: 340,
-              height: 480,
               background: 'linear-gradient(180deg, #0D1B2A 0%, #0a0a0a 100%)',
               zIndex: 9999,
             }}

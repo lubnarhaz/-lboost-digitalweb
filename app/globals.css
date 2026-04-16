@@ -353,14 +353,11 @@ body {
 
 .lena-window {
   border: 1px solid rgba(201,168,76,0.4);
-  border-radius: 20px;
+  /* border-radius handled via Tailwind responsive classes */
   box-shadow:
     0 0 40px rgba(201,168,76,0.15),
     0 0 80px rgba(107,33,168,0.1),
     0 25px 60px rgba(0,0,0,0.6);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
 }
 
 .lena-header {
@@ -469,4 +466,14 @@ body {
   .section-padding {
     @apply py-20 md:py-28;
   }
+}
+
+/* ===== WIDGET RESPONSIVE VISIBILITY ===== */
+/* mobile-only: visible on mobile, hidden on desktop (≥768px) */
+/* desktop-only: visible on desktop, hidden on mobile (<768px) */
+@media (min-width: 768px) {
+  .mobile-only { display: none !important; }
+}
+@media (max-width: 767px) {
+  .desktop-only { display: none !important; }
 }
