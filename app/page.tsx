@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
+import ContactModal from '@/components/ContactModal'
+import ChatbotLena from '@/components/ChatbotLena'
 import {
   Palette,
   Globe,
@@ -135,31 +137,43 @@ const services = [
     icon: Palette,
     title: 'Branding Complet',
     description: 'Logo, favicon, bannières, charte graphique complète — une identité visuelle qui vous démarque et inspire confiance.',
+    image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&h=400&fit=crop',
+    imageAlt: 'Design branding identité visuelle',
   },
   {
     icon: Globe,
     title: 'Création & Refonte Site Web',
     description: 'Sites vitrines, e-commerce, landing pages. Développement Next.js ultra-rapide, SEO-friendly et mobile-first.',
+    image: 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=600&h=400&fit=crop',
+    imageAlt: 'Création site web développement',
   },
   {
     icon: BrainCircuit,
     title: 'Automatisations IA',
     description: 'n8n, intégrations API, workflows intelligents. Automatisez vos processus métier et gagnez un temps précieux.',
+    image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&h=400&fit=crop',
+    imageAlt: 'Intelligence artificielle automatisation',
   },
   {
     icon: Bot,
     title: 'Agents & Chatbots IA',
     description: 'Assistants conversationnels sur-mesure disponibles 24h/7j. FAQ, prise de RDV, qualification de leads automatique.',
+    image: 'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=600&h=400&fit=crop',
+    imageAlt: 'Chatbot agent IA conversationnel',
   },
   {
     icon: CreditCard,
     title: 'Carte Fidélité Digitale',
     description: 'Compatible Apple & Google Wallet. Push notifications personnalisées via WalKin pour fidéliser vos clients.',
+    image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop',
+    imageAlt: 'Carte fidélité digitale paiement NFC',
   },
   {
     icon: Users,
     title: 'Community Management',
     description: 'Instagram, Facebook, LinkedIn, TikTok. Stratégie éditoriale, création de contenu, croissance organique.',
+    image: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=600&h=400&fit=crop',
+    imageAlt: 'Community management réseaux sociaux',
   },
 ]
 
@@ -913,6 +927,8 @@ export default function HomePage() {
 
       <Footer />
       <WhatsAppButton />
+      <ContactModal />
+      <ChatbotLena />
     </main>
   )
 }

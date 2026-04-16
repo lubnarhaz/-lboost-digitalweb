@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Send, Bot, Minimize2 } from 'lucide-react'
+import { X, Send, Minimize2 } from 'lucide-react'
 
 // ── Knowledge base ────────────────────────────────────────────────────────────
 const KB: Array<{ keywords: string[]; answer: string }> = [
@@ -34,12 +35,22 @@ const KB: Array<{ keywords: string[]; answer: string }> = [
   {
     keywords: ['lboost', 'agence', 'qui êtes', 'équipe', 'société', 'entreprise'],
     answer:
-      "LBoost est une agence digitale spécialisée dans la croissance des commerces locaux 🚀\nNous développons des outils sur-mesure comme WalKin pour aider les commerçants à fidéliser leurs clients et augmenter leur chiffre d'affaires.\nDes questions sur nos autres services ?",
+      "L-BOOST est une agence digitale spécialisée dans la croissance des commerces locaux 🚀\nNous développons des outils sur-mesure comme WalKin pour aider les commerçants à fidéliser leurs clients et augmenter leur chiffre d'affaires.\nDes questions sur nos autres services ?",
   },
   {
     keywords: ['contact', 'email', 'téléphone', 'joindre', 'écrire', 'adresse'],
     answer:
       "Vous pouvez nous joindre via :\n📧 Email : via le formulaire de contact\n💬 WhatsApp : +33 7 56 95 90 78\n\nOn répond généralement dans la journée ! 😊",
+  },
+  {
+    keywords: ['site', 'web', 'vitrine', 'ecommerce', 'landing'],
+    answer:
+      "Nous créons des sites web premium en Next.js — sites vitrines, e-commerce, landing pages 🌐\nRapides, SEO-optimisés et au design sur-mesure. Un projet en tête ? Contactez-nous et on vous fait une proposition !",
+  },
+  {
+    keywords: ['branding', 'logo', 'identité', 'charte', 'graphique'],
+    answer:
+      "Notre service Branding Complet comprend : logo, favicon, bannières réseaux sociaux et charte graphique complète livrée en PDF 🎨\nUne identité visuelle cohérente qui inspire confiance dès le premier regard !",
   },
 ]
 
@@ -47,7 +58,7 @@ const DEFAULT_ANSWER =
   "Je ne suis pas sûre de comprendre votre question 😊\nVous pouvez me demander des infos sur WalKin, nos tarifs, comment ça fonctionne, ou prendre rendez-vous.\n\nSinon, notre équipe est disponible directement sur WhatsApp ! 💬"
 
 const WELCOME =
-  "👋 Bonjour ! Je suis Lena, votre assistante WalKin.\nComment puis-je vous aider aujourd'hui ? 😊"
+  "Bonjour ! 👋 Je suis Lena, votre conseillère L-BOOST.\nComment puis-je vous aider aujourd'hui ? 😊"
 
 const SUGGESTIONS = [
   "💳 C'est quoi WalKin ?",
@@ -55,6 +66,9 @@ const SUGGESTIONS = [
   "📅 Prendre RDV",
   "🔍 Audit gratuit",
 ]
+
+// Avatar de Lena — femme professionnelle
+const LENA_AVATAR = 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=face'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Msg {
@@ -76,6 +90,32 @@ function getBotAnswer(input: string): string {
   return DEFAULT_ANSWER
 }
 
+// ── Lena Avatar component ─────────────────────────────────────────────────────
+function LenaAvatar({ size = 36, online = true }: { size?: number; online?: boolean }) {
+  return (
+    <div className="relative flex-shrink-0" style={{ width: size, height: size }}>
+      <div
+        className="rounded-full overflow-hidden border-2 border-[#C9A84C]/60"
+        style={{ width: size, height: size }}
+      >
+        <Image
+          src={LENA_AVATAR}
+          alt="Lena — Conseillère L-BOOST"
+          width={size}
+          height={size}
+          className="object-cover w-full h-full"
+        />
+      </div>
+      {online && (
+        <span
+          className="absolute bottom-0 right-0 rounded-full bg-green-400 border-2 border-white"
+          style={{ width: size * 0.28, height: size * 0.28 }}
+        />
+      )}
+    </div>
+  )
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 export default function ChatbotLena() {
   const [open, setOpen] = useState(false)
@@ -83,27 +123,44 @@ export default function ChatbotLena() {
   const [input, setInput] = useState('')
   const [typing, setTyping] = useState(false)
   const [welcomeShown, setWelcomeShown] = useState(false)
+  const [showBubble, setShowBubble] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  let nextId = useRef(1)
+  const nextId = useRef(1)
 
   // Auto-welcome after 3s
   useEffect(() => {
     if (welcomeShown) return
-    const t = setTimeout(() => {
+    const t1 = setTimeout(() => {
       setWelcomeShown(true)
       pushBot(WELCOME)
     }, 3000)
-    return () => clearTimeout(t)
+    // Show teaser bubble after 4s
+    const t2 = setTimeout(() => {
+      if (!open) setShowBubble(true)
+    }, 4000)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [welcomeShown])
 
-  // Scroll to bottom on new message
+  // Hide bubble when chat opens
+  useEffect(() => {
+    if (open) setShowBubble(false)
+  }, [open])
+
+  // Auto-hide bubble after 6s
+  useEffect(() => {
+    if (!showBubble) return
+    const t = setTimeout(() => setShowBubble(false), 6000)
+    return () => clearTimeout(t)
+  }, [showBubble])
+
+  // Scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [msgs, typing])
 
-  // Focus input when opening
+  // Focus input
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 200)
   }, [open])
@@ -120,92 +177,123 @@ export default function ChatbotLena() {
     const userText = text.trim()
     setInput('')
     setMsgs((prev) => [...prev, { id: nextId.current++, role: 'user', text: userText, ts: getTime() }])
-
     setTyping(true)
     setTimeout(() => {
       setTyping(false)
       pushBot(getBotAnswer(userText))
-    }, 900 + Math.random() * 400)
-  }
-
-  const handleSend = () => sendMessage(input)
-  const handleKey = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() }
+    }, 900 + Math.random() * 500)
   }
 
   return (
     <>
-      {/* Floating button */}
+      {/* Teaser bubble */}
+      <AnimatePresence>
+        {showBubble && !open && (
+          <motion.div
+            initial={{ opacity: 0, x: -10, scale: 0.9 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -10, scale: 0.9 }}
+            className="fixed bottom-[88px] left-6 z-50 bg-white rounded-2xl rounded-bl-none shadow-xl border border-gray-100 px-4 py-3 max-w-[200px]"
+            style={{ boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}
+          >
+            <p className="text-[#0A0A0A] text-xs font-inter leading-relaxed">
+              👋 Bonjour ! Besoin d&apos;aide ? Je suis là !
+            </p>
+            <div className="absolute -bottom-2 left-4 w-3 h-3 bg-white border-b border-l border-gray-100 rotate-45" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Floating button — human avatar */}
       <motion.button
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 2, type: 'spring', stiffness: 240, damping: 16 }}
+        transition={{ delay: 2.2, type: 'spring', stiffness: 240, damping: 16 }}
         onClick={() => setOpen((v) => !v)}
-        className="fixed bottom-6 left-6 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-xl"
-        style={{ background: 'linear-gradient(135deg, #6B21A8, #0D1B2A)' }}
+        className="fixed bottom-6 left-6 z-50 rounded-full shadow-2xl"
+        style={{
+          width: 56,
+          height: 56,
+          boxShadow: '0 8px 32px rgba(201,168,76,0.35), 0 2px 8px rgba(0,0,0,0.2)',
+        }}
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.92 }}
-        aria-label={open ? 'Fermer le chat Lena' : 'Ouvrir le chat Lena'}
+        aria-label={open ? 'Fermer le chat' : 'Parler à Lena, conseillère L-BOOST'}
       >
         <AnimatePresence mode="wait">
           {open ? (
-            <motion.div key="close"
-              initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }}
+            <motion.div
+              key="close"
+              initial={{ rotate: -90, opacity: 0, scale: 0.7 }}
+              animate={{ rotate: 0, opacity: 1, scale: 1 }}
+              exit={{ rotate: 90, opacity: 0, scale: 0.7 }}
               transition={{ duration: 0.2 }}
+              className="w-14 h-14 rounded-full bg-[#0D1B2A] flex items-center justify-center"
             >
-              <X size={22} className="text-white" />
+              <X size={20} className="text-white" />
             </motion.div>
           ) : (
-            <motion.div key="bot"
-              initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }}
+            <motion.div
+              key="avatar"
+              initial={{ rotate: 90, opacity: 0, scale: 0.7 }}
+              animate={{ rotate: 0, opacity: 1, scale: 1 }}
+              exit={{ rotate: -90, opacity: 0, scale: 0.7 }}
               transition={{ duration: 0.2 }}
+              className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-[#C9A84C]"
             >
-              <Bot size={24} className="text-white" />
+              <Image
+                src={LENA_AVATAR}
+                alt="Lena, conseillère L-BOOST"
+                fill
+                className="object-cover"
+                sizes="56px"
+              />
+              {/* Online dot */}
+              <span className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-green-400 border-2 border-white" />
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Dot indicator */}
-        {!open && (
-          <span className="absolute top-1 right-1 w-3 h-3 rounded-full bg-green-400 border-2 border-white" />
-        )}
       </motion.button>
 
-      {/* Chat bubble */}
+      {/* Chat window */}
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.88, y: 20, originX: 0, originY: 1 }}
+            initial={{ opacity: 0, scale: 0.88, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.88, y: 20 }}
             transition={{ type: 'spring', stiffness: 280, damping: 26 }}
             className="fixed bottom-24 left-6 z-50 flex flex-col overflow-hidden rounded-3xl border border-white/10"
             style={{
               width: 320,
-              height: 460,
+              height: 480,
               background: '#0D1B2A',
-              boxShadow: '0 25px 70px rgba(0,0,0,0.5), 0 0 0 1px rgba(107,33,168,0.3)',
+              boxShadow: '0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(107,33,168,0.25)',
             }}
             role="dialog"
-            aria-label="Chat avec Lena, assistante WalKin"
+            aria-label="Chat avec Lena, conseillère L-BOOST"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3.5 border-b border-white/8"
-              style={{ background: '#0D1B2A' }}
+            <div
+              className="flex items-center justify-between px-4 py-3.5 border-b border-white/8"
+              style={{ background: 'linear-gradient(135deg, #0D1B2A 0%, #1a1a35 100%)' }}
             >
               <div className="flex items-center gap-3">
-                <div className="relative w-9 h-9 rounded-full bg-gradient-to-br from-[#6B21A8] to-[#4C1D95] flex items-center justify-center flex-shrink-0">
-                  <Bot size={18} className="text-white" />
-                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-green-400 border-2 border-[#0D1B2A]" />
-                </div>
+                <LenaAvatar size={40} online />
                 <div>
-                  <p className="text-white font-semibold text-sm font-inter">Lena 🤖</p>
-                  <p className="text-white/40 text-[10px] font-inter">Assistante WalKin · En ligne 24h/24</p>
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-white font-semibold text-sm font-inter">Lena</p>
+                    <span className="text-[#C9A84C] text-[10px] font-inter">• L-BOOST</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                    <p className="text-white/40 text-[10px] font-inter">Conseillère digitale · En ligne</p>
+                  </div>
                 </div>
               </div>
               <button
                 onClick={() => setOpen(false)}
-                className="text-white/40 hover:text-white transition-colors p-1"
+                className="text-white/40 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white/8"
                 aria-label="Réduire le chat"
               >
                 <Minimize2 size={15} />
@@ -213,10 +301,10 @@ export default function ChatbotLena() {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3" style={{ background: '#F8F8F8' }}>
+            <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3" style={{ background: '#F5F5F7' }}>
               {msgs.length === 0 && (
-                <div className="text-center text-[#6B6B6B] text-xs font-inter pt-6 opacity-60">
-                  Lena arrive dans un instant...
+                <div className="text-center text-[#9CA3AF] text-[11px] font-inter pt-8">
+                  Lena arrive dans quelques secondes...
                 </div>
               )}
 
@@ -225,20 +313,17 @@ export default function ChatbotLena() {
                   key={msg.id}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.25 }}
-                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} gap-2`}
+                  transition={{ duration: 0.22 }}
+                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} items-end gap-2`}
                 >
-                  {msg.role === 'bot' && (
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#6B21A8] to-[#4C1D95] flex items-center justify-center flex-shrink-0 mt-auto">
-                      <Bot size={13} className="text-white" />
-                    </div>
-                  )}
-                  <div className="max-w-[78%]">
+                  {msg.role === 'bot' && <LenaAvatar size={28} online={false} />}
+
+                  <div className="max-w-[76%]">
                     <div
                       className={`px-3.5 py-2.5 rounded-2xl text-xs font-inter leading-relaxed whitespace-pre-line ${
                         msg.role === 'user'
-                          ? 'bg-[#6B21A8] text-white rounded-tr-sm'
-                          : 'bg-white text-[#0A0A0A] rounded-tl-sm shadow-sm border border-gray-100'
+                          ? 'bg-[#6B21A8] text-white rounded-br-sm'
+                          : 'bg-white text-[#0A0A0A] rounded-bl-sm shadow-sm border border-gray-100'
                       }`}
                     >
                       {msg.text}
@@ -247,7 +332,7 @@ export default function ChatbotLena() {
                       {msg.ts}
                     </p>
 
-                    {/* Quick suggestions after welcome */}
+                    {/* Quick suggestions */}
                     {msg.role === 'bot' && msg.text === WELCOME && (
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {SUGGESTIONS.map((s) => (
@@ -265,19 +350,17 @@ export default function ChatbotLena() {
                 </motion.div>
               ))}
 
-              {/* Typing indicator */}
+              {/* Typing */}
               <AnimatePresence>
                 {typing && (
                   <motion.div
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    className="flex items-center gap-2"
+                    className="flex items-end gap-2"
                   >
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#6B21A8] to-[#4C1D95] flex items-center justify-center flex-shrink-0">
-                      <Bot size={13} className="text-white" />
-                    </div>
-                    <div className="bg-white border border-gray-100 px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm flex gap-1">
+                    <LenaAvatar size={28} online={false} />
+                    <div className="bg-white border border-gray-100 px-4 py-3 rounded-2xl rounded-bl-sm shadow-sm flex gap-1">
                       {[0, 1, 2].map((i) => (
                         <span
                           key={i}
@@ -300,20 +383,20 @@ export default function ChatbotLena() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKey}
+                onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input) } }}
                 placeholder="Votre message..."
                 className="flex-1 bg-white/8 border border-white/12 rounded-xl px-3.5 py-2.5 text-white text-xs font-inter placeholder-white/30 focus:outline-none focus:border-[#7C3AED] transition-colors"
                 maxLength={300}
                 aria-label="Message à Lena"
               />
               <motion.button
-                onClick={handleSend}
+                onClick={() => sendMessage(input)}
                 disabled={!input.trim()}
                 className="w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-30"
                 style={{ background: '#6B21A8' }}
-                whileHover={input.trim() ? { scale: 1.05, background: '#7C3AED' } : {}}
+                whileHover={input.trim() ? { scale: 1.05 } : {}}
                 whileTap={input.trim() ? { scale: 0.92 } : {}}
-                aria-label="Envoyer le message"
+                aria-label="Envoyer"
               >
                 <Send size={14} className="text-white" />
               </motion.button>
@@ -322,7 +405,6 @@ export default function ChatbotLena() {
         )}
       </AnimatePresence>
 
-      {/* Keyframes */}
       <style>{`
         @keyframes dotBounce {
           0%, 100% { transform: translateY(0); }
