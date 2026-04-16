@@ -1,0 +1,263 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gold: #C9A84C;
+  --gold-light: #E4C46E;
+  --gold-dark: #A8862A;
+  --navy: #1A1A2E;
+  --cream: #F8F7F4;
+  --deep-black: #0A0A0A;
+  --muted: #6B6B6B;
+}
+
+/* ===== BASE ===== */
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--cream);
+  color: var(--deep-black);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== SELECTION ===== */
+::selection {
+  background-color: rgba(201, 168, 76, 0.3);
+  color: var(--deep-black);
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--deep-black);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-light);
+}
+
+/* ===== HERO ANIMATIONS ===== */
+@keyframes heroBgPulse {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.hero-bg {
+  background: linear-gradient(-45deg, #0A0A0A, #1A1A2E, #0D0D1E, #0A0A0A);
+  background-size: 400% 400%;
+  animation: heroBgPulse 12s ease infinite;
+}
+
+/* ===== PARTICLE ===== */
+@keyframes particleFloat1 {
+  0% { transform: translate(0px, 0px) scale(1); opacity: 0.8; }
+  33% { transform: translate(-30px, -50px) scale(1.2); opacity: 1; }
+  66% { transform: translate(20px, -90px) scale(0.8); opacity: 0.6; }
+  100% { transform: translate(0px, -140px) scale(0.3); opacity: 0; }
+}
+
+@keyframes particleFloat2 {
+  0% { transform: translate(0px, 0px) scale(1); opacity: 0.7; }
+  33% { transform: translate(40px, -40px) scale(0.9); opacity: 1; }
+  66% { transform: translate(-15px, -80px) scale(1.1); opacity: 0.7; }
+  100% { transform: translate(0px, -130px) scale(0.2); opacity: 0; }
+}
+
+@keyframes particleFloat3 {
+  0% { transform: translate(0px, 0px) scale(1); opacity: 0.6; }
+  50% { transform: translate(-20px, -60px) scale(1.3); opacity: 0.9; }
+  100% { transform: translate(10px, -120px) scale(0.2); opacity: 0; }
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gold);
+  pointer-events: none;
+}
+
+.particle-1 { animation: particleFloat1 6s ease-in infinite; }
+.particle-2 { animation: particleFloat2 7s ease-in infinite 1s; }
+.particle-3 { animation: particleFloat3 5s ease-in infinite 2s; }
+.particle-4 { animation: particleFloat1 8s ease-in infinite 0.5s; }
+.particle-5 { animation: particleFloat2 6.5s ease-in infinite 3s; }
+.particle-6 { animation: particleFloat3 7.5s ease-in infinite 1.5s; }
+.particle-7 { animation: particleFloat1 5.5s ease-in infinite 2.5s; }
+.particle-8 { animation: particleFloat2 8s ease-in infinite 4s; }
+
+/* ===== TYPEWRITER ===== */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.typewriter-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.2em;
+  background-color: var(--gold);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: blink 0.8s ease-in-out infinite;
+}
+
+/* ===== BUTTONS ===== */
+@keyframes shimmerMove {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.btn-gold {
+  position: relative;
+  overflow: hidden;
+  background: var(--gold);
+  color: var(--deep-black);
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.btn-gold::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+  background-size: 200% auto;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn-gold:hover::after {
+  opacity: 1;
+  animation: shimmerMove 1s linear infinite;
+}
+
+.btn-gold:hover {
+  background: var(--gold-light);
+  box-shadow: 0 0 30px rgba(201, 168, 76, 0.5), 0 8px 25px rgba(0,0,0,0.3);
+  transform: translateY(-2px);
+}
+
+/* ===== CHEVRON INDICATOR ===== */
+@keyframes bounceDown {
+  0%, 100% { transform: translateY(0) translateX(-50%); }
+  50% { transform: translateY(10px) translateX(-50%); }
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: bounceDown 1.5s ease-in-out infinite;
+}
+
+/* ===== GOLD TEXT ===== */
+.text-gold {
+  color: var(--gold);
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== SECTION DIVIDER ===== */
+.section-divider {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 2px;
+  margin: 0 auto 1.5rem;
+}
+
+/* ===== CARD HOVER ===== */
+.service-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.service-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 0 1px var(--gold), 0 20px 60px rgba(201, 168, 76, 0.2);
+}
+
+/* ===== GOLD BORDER ANIMATED ===== */
+@keyframes borderGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(201, 168, 76, 0.3); }
+  50% { box-shadow: 0 0 25px rgba(201, 168, 76, 0.6), 0 0 50px rgba(201, 168, 76, 0.2); }
+}
+
+.featured-pack {
+  animation: borderGlow 3s ease-in-out infinite;
+}
+
+/* ===== TIMELINE ===== */
+.timeline-line {
+  background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+  background-size: 200% auto;
+  animation: shimmerMove 3s linear infinite;
+}
+
+/* ===== ACCORDION ===== */
+.accordion-content {
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+
+/* ===== WALLET CARD ===== */
+.wallet-card {
+  background: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 50%, #1c1c1e 100%);
+  border-radius: 20px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+/* ===== NAVBAR ===== */
+.navbar-scrolled {
+  background: rgba(10, 10, 10, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  box-shadow: 0 1px 0 rgba(201, 168, 76, 0.2) !important;
+}
+
+/* ===== WHATSAPP FLOAT ===== */
+@keyframes waPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); }
+  50% { box-shadow: 0 0 0 16px rgba(37, 211, 102, 0); }
+}
+
+.wa-float {
+  animation: waPulse 2.5s ease-in-out infinite;
+}
+
+/* ===== RESPONSIVE HELPERS ===== */
+@layer utilities {
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-padding {
+    @apply py-20 md:py-28;
+  }
+}
