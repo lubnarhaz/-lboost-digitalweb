@@ -1,20 +1,23 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, MessageCircle } from 'lucide-react'
 
 const navLinks = [
-  { label: 'Services', href: '#services' },
-  { label: 'Packs', href: '#packs' },
-  { label: 'Processus', href: '#processus' },
-  { label: 'Témoignages', href: '#temoignages' },
-  { label: 'FAQ', href: '#faq' },
+  { label: 'Services', href: '#services', isPage: false },
+  { label: 'Packs', href: '#packs', isPage: false },
+  { label: 'WalKin', href: '/walkin', isPage: true, badge: 'Nouveau' },
+  { label: 'Processus', href: '#processus', isPage: false },
+  { label: 'FAQ', href: '#faq', isPage: false },
 ]
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50)
@@ -22,8 +25,17 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const handleNavClick = (href: string) => {
+  const handleNavClick = (href: string, isPage?: boolean) => {
     setMenuOpen(false)
+    if (isPage) {
+      router.push(href)
+      return
+    }
+    // If not on homepage, navigate there first
+    if (pathname !== '/') {
+      router.push('/' + href)
+      return
+    }
     const el = document.querySelector(href)
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
@@ -60,14 +72,19 @@ export default function Navbar() {
             </motion.a>
 
             {/* Desktop Nav */}
-            <nav className="hidden md:flex items-center gap-8" aria-label="Navigation principale">
+            <nav className="hidden md:flex items-center gap-7" aria-label="Navigation principale">
               {navLinks.map((link) => (
                 <button
                   key={link.href}
-                  onClick={() => handleNavClick(link.href)}
-                  className="text-white/70 hover:text-[#C9A84C] text-sm font-medium tracking-wide transition-colors duration-200 relative group"
+                  onClick={() => handleNavClick(link.href, link.isPage)}
+                  className="relative flex items-center gap-1.5 text-white/70 hover:text-[#C9A84C] text-sm font-medium tracking-wide transition-colors duration-200 group"
                 >
                   {link.label}
+                  {link.badge && (
+                    <span className="bg-[#C9A84C] text-[#0A0A0A] text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide">
+                      {link.badge}
+                    </span>
+                  )}
                   <span className="absolute -bottom-1 left-0 w-0 h-px bg-[#C9A84C] transition-all duration-300 group-hover:w-full" />
                 </button>
               ))}
@@ -98,23 +115,11 @@ export default function Navbar() {
             >
               <AnimatePresence mode="wait">
                 {menuOpen ? (
-                  <motion.div
-                    key="close"
-                    initial={{ rotate: -90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
+                  <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
                     <X size={24} />
                   </motion.div>
                 ) : (
-                  <motion.div
-                    key="menu"
-                    initial={{ rotate: 90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
+                  <motion.div key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
                     <Menu size={24} />
                   </motion.div>
                 )}
@@ -141,10 +146,15 @@ export default function Navbar() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.07 }}
-                  onClick={() => handleNavClick(link.href)}
-                  className="text-left text-white/80 hover:text-[#C9A84C] text-2xl font-playfair font-medium border-b border-white/10 pb-5 transition-colors"
+                  onClick={() => handleNavClick(link.href, link.isPage)}
+                  className="text-left flex items-center gap-3 text-white/80 hover:text-[#C9A84C] text-2xl font-playfair font-medium border-b border-white/10 pb-5 transition-colors"
                 >
                   {link.label}
+                  {link.badge && (
+                    <span className="bg-[#C9A84C] text-[#0A0A0A] text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">
+                      {link.badge}
+                    </span>
+                  )}
                 </motion.button>
               ))}
             </nav>

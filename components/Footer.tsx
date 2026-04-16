@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 import { MessageCircle, Instagram, Facebook, Linkedin, ArrowUpRight } from 'lucide-react'
 
 const footerLinks = {
@@ -17,6 +18,7 @@ const footerLinks = {
     { label: 'Notre Processus', href: '#processus' },
     { label: 'Témoignages', href: '#temoignages' },
     { label: 'FAQ', href: '#faq' },
+    { label: '★ Carte Fidélité WalKin', href: '/walkin', isPage: true },
     { label: 'Mentions légales', href: '#' },
   ],
 }
@@ -28,8 +30,11 @@ const socials = [
 ]
 
 export default function Footer() {
-  const handleScroll = (href: string) => {
+  const router = useRouter()
+
+  const handleScroll = (href: string, isPage?: boolean) => {
     if (href === '#') return
+    if (isPage) { router.push(href); return }
     const el = document.querySelector(href)
     if (el) el.scrollIntoView({ behavior: 'smooth' })
   }
@@ -94,8 +99,12 @@ export default function Footer() {
               {footerLinks.company.map((link) => (
                 <li key={link.label}>
                   <button
-                    onClick={() => handleScroll(link.href)}
-                    className="text-white/40 hover:text-[#C9A84C] text-sm font-inter transition-colors duration-200 text-left"
+                    onClick={() => handleScroll(link.href, (link as { isPage?: boolean }).isPage)}
+                    className={`text-sm font-inter transition-colors duration-200 text-left ${
+                      (link as { isPage?: boolean }).isPage
+                        ? 'text-[#C9A84C]/70 hover:text-[#C9A84C] font-medium'
+                        : 'text-white/40 hover:text-[#C9A84C]'
+                    }`}
                   >
                     {link.label}
                   </button>
