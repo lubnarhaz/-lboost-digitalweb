@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useContactModal } from '@/context/ContactModalContext'
 import {
   Palette,
   Globe,
@@ -20,6 +21,10 @@ import {
   ChevronLeft,
   Plus,
   Minus,
+  Loader2,
+  CheckCircle,
+  AlertCircle,
+  Send,
 } from 'lucide-react'
 
 import Navbar from '@/components/Navbar'
@@ -310,12 +315,103 @@ const faqs = [
   },
 ]
 
+// ── Inline form constants ─────────────────────────────────────────────────────
+const INLINE_GOOGLE_SCRIPT_URL =
+  'https://script.google.com/macros/s/AKfycbzg5kLK04NeTW6DmxrdLpmF_ZgpTzOAMmOvxXtImRJ0l_4_5ymKkdawLcyKY0EvkZTJ/exec'
+
+const INLINE_TYPE_COMMERCE = [
+  { value: '', label: '-- Sélectionnez votre activité --' },
+  { value: 'Restaurant', label: 'Restaurant' },
+  { value: 'Boutique', label: 'Boutique' },
+  { value: 'Café/Bar', label: 'Café / Bar' },
+  { value: 'Hôtel', label: 'Hôtel' },
+  { value: 'Beauty/Spa', label: 'Beauty / Spa' },
+  { value: 'Salle de sport', label: 'Salle de sport' },
+  { value: 'Pharmacie', label: 'Pharmacie' },
+  { value: 'Autre', label: 'Autre' },
+]
+
+const INLINE_NB_CLIENTS = [
+  { value: '', label: '-- Sélectionnez une tranche --' },
+  { value: 'Moins de 500', label: 'Moins de 500' },
+  { value: '500-2000', label: '500 – 2 000' },
+  { value: '2000-5000', label: '2 000 – 5 000' },
+  { value: 'Plus de 5000', label: 'Plus de 5 000' },
+]
+
+type InlineStatus = 'idle' | 'loading' | 'success' | 'error'
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function HomePage() {
+  const { openModal } = useContactModal()
   const [activeTestimonial, setActiveTestimonial] = useState(0)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const carouselRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  // ── Inline form state ──────────────────────────────────────────────────────
+  const [inlineForm, setInlineForm] = useState({
+    nom: '', entreprise: '', email: '', telephone: '',
+    typeCommerce: '', nbClients: '', message: '',
+  })
+  const [inlineStatus, setInlineStatus] = useState<InlineStatus>('idle')
+  const [inlineErrors, setInlineErrors] = useState<Record<string, string>>({})
+
+  const handleInlineChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target
+    setInlineForm((prev) => ({ ...prev, [name]: value }))
+    if (inlineErrors[name]) setInlineErrors((prev) => { const n = { ...prev }; delete n[name]; return n })
+  }
+
+  const validateInline = () => {
+    const errs: Record<string, string> = {}
+    if (!inlineForm.nom.trim()) errs.nom = 'Requis'
+    if (!inlineForm.entreprise.trim()) errs.entreprise = 'Requis'
+    if (!inlineForm.email.trim()) errs.email = 'Requis'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inlineForm.email)) errs.email = 'Email invalide'
+    if (!inlineForm.telephone.trim()) errs.telephone = 'Requis'
+    if (!inlineForm.typeCommerce) errs.typeCommerce = 'Requis'
+    if (!inlineForm.nbClients) errs.nbClients = 'Requis'
+    if (!inlineForm.message.trim()) errs.message = 'Requis'
+    return errs
+  }
+
+  const handleInlineSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const errs = validateInline()
+    if (Object.keys(errs).length > 0) { setInlineErrors(errs); return }
+    setInlineStatus('loading')
+    try {
+      await fetch(INLINE_GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(inlineForm),
+      })
+      setInlineStatus('success')
+      setInlineForm({ nom: '', entreprise: '', email: '', telephone: '', typeCommerce: '', nbClients: '', message: '' })
+    } catch {
+      setInlineStatus('error')
+    }
+  }
+
+  const inlineInputClass = (field: string) =>
+    `w-full bg-white/10 border rounded-xl px-4 py-3 text-white placeholder-gray-400 text-sm font-inter focus:outline-none transition-all duration-200 ${
+      inlineErrors[field]
+        ? 'border-red-400 focus:border-red-400'
+        : 'border-white/20 focus:border-[#C9A84C]'
+    }`
+
+  const inlineSelectClass = (field: string) =>
+    `w-full bg-[#0A0A0A] border rounded-xl px-4 py-3 text-sm font-inter focus:outline-none transition-all duration-200 appearance-none cursor-pointer ${
+      inlineForm[field as keyof typeof inlineForm] ? 'text-white' : 'text-gray-400'
+    } ${
+      inlineErrors[field]
+        ? 'border-red-400 focus:border-red-400'
+        : 'border-white/20 focus:border-[#C9A84C]'
+    }`
 
   // Autoplay carousel
   useEffect(() => {
@@ -537,17 +633,15 @@ export default function HomePage() {
             <p className="text-white/40 font-inter mb-4">
               Vous préférez à la carte ? Contactez-nous pour un devis personnalisé.
             </p>
-            <motion.a
-              href="https://wa.me/33756959078?text=Bonjour%2C%20je%20souhaite%20un%20devis%20sur-mesure..."
-              target="_blank"
-              rel="noopener noreferrer"
+            <motion.button
+              onClick={openModal}
               className="inline-flex items-center gap-2 text-[#C9A84C] border border-[#C9A84C]/40 hover:border-[#C9A84C] hover:bg-[#C9A84C]/10 px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300"
               whileHover={{ scale: 1.03 }}
               aria-label="Demander un devis sur-mesure à L-BOOST"
             >
               <MessageCircle size={16} />
               Demander un devis sur-mesure
-            </motion.a>
+            </motion.button>
           </motion.div>
         </div>
       </section>
@@ -868,18 +962,31 @@ export default function HomePage() {
       </section>
 
       {/* ════════════════════════════════════════════════
-          SECTION 9 — CTA FINAL
+          SECTION 9 — CTA FINAL (FUTURISTIC)
       ════════════════════════════════════════════════ */}
       <section className="bg-[#0A0A0A] py-24 md:py-36 relative overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-8"
-            style={{
-              background: 'radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%)',
-            }}
-          />
-        </div>
+        {/* Animated grid background */}
+        <div className="absolute inset-0 grid-bg pointer-events-none" />
+
+        {/* Scan line */}
+        <div className="scan-line" />
+
+        {/* Halo lumineux */}
+        <div
+          className="pointer-events-none"
+          style={{
+            position: 'absolute',
+            width: 600,
+            height: 600,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(107,33,168,0.3) 0%, rgba(201,168,76,0.1) 40%, transparent 70%)',
+            animation: 'haloPulse 3s ease-in-out infinite',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 0,
+          }}
+        />
 
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <AnimatedSection>
@@ -895,12 +1002,13 @@ export default function HomePage() {
                 style={{ fontSize: 'clamp(32px, 5vw, 60px)' }}
               >
                 Prêt à transformer votre{' '}
-                <span className="text-[#C9A84C]">présence digitale</span>&nbsp;?
+                <span className="shimmer-text">présence digitale</span>&nbsp;?
               </h2>
               <p className="text-white/50 text-lg font-inter mb-10 max-w-xl mx-auto">
                 Échangeons sur votre projet. Réponse garantie sous 2h.
               </p>
 
+              {/* WhatsApp CTA — preserved as-is */}
               <motion.a
                 href="https://wa.me/33756959078?text=Bonjour%2C%20je%20souhaite%20un%20devis%20pour..."
                 target="_blank"
@@ -917,6 +1025,170 @@ export default function HomePage() {
               <p className="mt-6 text-white/30 font-inter text-sm tracking-widest">
                 07 56 95 90 78
               </p>
+
+              {/* Separator */}
+              <p className="text-gray-500 my-8 font-inter text-sm tracking-wide">
+                — ou remplissez le formulaire —
+              </p>
+
+              {/* Inline contact form */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="form-glow bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:p-8 max-w-2xl mx-auto text-left"
+              >
+                {inlineStatus === 'success' ? (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex flex-col items-center py-10 text-center"
+                  >
+                    <div className="w-14 h-14 rounded-full bg-green-500/15 border-2 border-green-500/40 flex items-center justify-center mb-4">
+                      <CheckCircle size={28} className="text-green-400" />
+                    </div>
+                    <h3 className="font-playfair font-bold text-white text-xl mb-2">Demande envoyée !</h3>
+                    <p className="text-white/60 font-inter text-sm">✅ On vous recontacte sous 24h.</p>
+                  </motion.div>
+                ) : (
+                  <form onSubmit={handleInlineSubmit} noValidate className="space-y-4">
+                    {/* Nom + Entreprise */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-gray-300 text-sm font-medium mb-1">
+                          Prénom et Nom <span className="text-red-400">*</span>
+                        </label>
+                        <input
+                          type="text" name="nom" placeholder="Ex : Marie Dupont"
+                          value={inlineForm.nom} onChange={handleInlineChange}
+                          className={inlineInputClass('nom')} autoComplete="name"
+                        />
+                        {inlineErrors.nom && <p className="text-red-400 text-[11px] mt-1 pl-1">{inlineErrors.nom}</p>}
+                      </div>
+                      <div>
+                        <label className="block text-gray-300 text-sm font-medium mb-1">
+                          Nom de l&apos;entreprise <span className="text-red-400">*</span>
+                        </label>
+                        <input
+                          type="text" name="entreprise" placeholder="Ex : Café de la Place..."
+                          value={inlineForm.entreprise} onChange={handleInlineChange}
+                          className={inlineInputClass('entreprise')} autoComplete="organization"
+                        />
+                        {inlineErrors.entreprise && <p className="text-red-400 text-[11px] mt-1 pl-1">{inlineErrors.entreprise}</p>}
+                      </div>
+                    </div>
+
+                    {/* Email + Téléphone */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-gray-300 text-sm font-medium mb-1">
+                          Email <span className="text-red-400">*</span>
+                        </label>
+                        <input
+                          type="email" name="email" placeholder="exemple@moncommerce.fr"
+                          value={inlineForm.email} onChange={handleInlineChange}
+                          className={inlineInputClass('email')} autoComplete="email"
+                        />
+                        {inlineErrors.email && <p className="text-red-400 text-[11px] mt-1 pl-1">{inlineErrors.email}</p>}
+                      </div>
+                      <div>
+                        <label className="block text-gray-300 text-sm font-medium mb-1">
+                          Téléphone <span className="text-red-400">*</span>
+                        </label>
+                        <input
+                          type="tel" name="telephone" placeholder="06 XX XX XX XX"
+                          value={inlineForm.telephone} onChange={handleInlineChange}
+                          className={inlineInputClass('telephone')} autoComplete="tel"
+                        />
+                        {inlineErrors.telephone && <p className="text-red-400 text-[11px] mt-1 pl-1">{inlineErrors.telephone}</p>}
+                      </div>
+                    </div>
+
+                    {/* Type commerce + Nb clients */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-gray-300 text-sm font-medium mb-1">
+                          Type de commerce <span className="text-red-400">*</span>
+                        </label>
+                        <select
+                          name="typeCommerce" value={inlineForm.typeCommerce}
+                          onChange={handleInlineChange} className={inlineSelectClass('typeCommerce')}
+                        >
+                          {INLINE_TYPE_COMMERCE.map((o) => (
+                            <option key={o.value} value={o.value} disabled={!o.value} className="bg-[#0A0A0A] text-white">
+                              {o.label}
+                            </option>
+                          ))}
+                        </select>
+                        {inlineErrors.typeCommerce && <p className="text-red-400 text-[11px] mt-1 pl-1">{inlineErrors.typeCommerce}</p>}
+                      </div>
+                      <div>
+                        <label className="block text-gray-300 text-sm font-medium mb-1">
+                          Volume clients / mois <span className="text-red-400">*</span>
+                        </label>
+                        <select
+                          name="nbClients" value={inlineForm.nbClients}
+                          onChange={handleInlineChange} className={inlineSelectClass('nbClients')}
+                        >
+                          {INLINE_NB_CLIENTS.map((o) => (
+                            <option key={o.value} value={o.value} disabled={!o.value} className="bg-[#0A0A0A] text-white">
+                              {o.label}
+                            </option>
+                          ))}
+                        </select>
+                        {inlineErrors.nbClients && <p className="text-red-400 text-[11px] mt-1 pl-1">{inlineErrors.nbClients}</p>}
+                      </div>
+                    </div>
+
+                    {/* Message */}
+                    <div>
+                      <label className="block text-gray-300 text-sm font-medium mb-1">
+                        Décrivez votre besoin <span className="text-red-400">*</span>
+                      </label>
+                      <textarea
+                        name="message"
+                        placeholder="Ex : Je cherche à fidéliser mes clients et développer ma présence digitale..."
+                        value={inlineForm.message} onChange={handleInlineChange}
+                        rows={4} className={`${inlineInputClass('message')} resize-none`}
+                      />
+                      {inlineErrors.message && <p className="text-red-400 text-[11px] mt-1 pl-1">{inlineErrors.message}</p>}
+                    </div>
+
+                    {/* Error */}
+                    {inlineStatus === 'error' && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="flex items-center gap-2.5 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3"
+                      >
+                        <AlertCircle size={16} className="text-red-400 flex-shrink-0" />
+                        <p className="text-red-300 text-xs font-inter">
+                          Une erreur est survenue. Réessayez ou contactez-nous sur WhatsApp.
+                        </p>
+                      </motion.div>
+                    )}
+
+                    <p className="text-gray-500 text-xs font-inter">
+                      * Champs obligatoires — Vos données sont confidentielles et ne seront jamais partagées.
+                    </p>
+
+                    <motion.button
+                      type="submit"
+                      disabled={inlineStatus === 'loading'}
+                      className="w-full flex items-center justify-center gap-2 bg-[#C9A84C] text-[#0A0A0A] py-4 rounded-xl font-bold text-sm font-inter transition-all duration-300 hover:bg-[#E4C46E] disabled:opacity-60 disabled:cursor-not-allowed shadow-lg"
+                      whileHover={inlineStatus !== 'loading' ? { scale: 1.01 } : {}}
+                      whileTap={inlineStatus !== 'loading' ? { scale: 0.98 } : {}}
+                    >
+                      {inlineStatus === 'loading' ? (
+                        <><Loader2 size={16} className="animate-spin" /> Envoi en cours...</>
+                      ) : (
+                        <><Send size={16} /> Envoyer ma demande ✨</>
+                      )}
+                    </motion.button>
+                  </form>
+                )}
+              </motion.div>
             </motion.div>
           </AnimatedSection>
         </div>
