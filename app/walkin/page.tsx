@@ -12,6 +12,8 @@ import {
 
 import Navbar from '@/components/Navbar'
 import WhatsAppButton from '@/components/WhatsAppButton'
+import ContactModal from '@/components/ContactModal'
+import ChatbotLena from '@/components/ChatbotLena'
 import CountUpNumber from '@/components/CountUpNumber'
 import AnimatedSection from '@/components/AnimatedSection'
 import WalletCard from '@/components/walkin/WalletCard'
@@ -492,16 +494,10 @@ export default function WalkinPage() {
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.45 }}
                 className="flex flex-col sm:flex-row gap-4"
               >
-                <motion.a
-                  href="https://wa.me/33756959078?text=Bonjour%2C%20je%20veux%20une%20d%C3%A9mo%20WalKin"
-                  target="_blank" rel="noopener noreferrer"
-                  className="btn-gold px-7 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2"
-                  whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                  aria-label="Demander une démo WalKin gratuite"
-                >
-                  <MessageCircle size={18} />
-                  Demander une démo gratuite
-                </motion.a>
+                <ContactModal
+                  triggerLabel="Demander une démo gratuite"
+                  triggerClassName="btn-gold px-7 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 inline-flex"
+                />
                 <button
                   onClick={() => document.querySelector('#comment')?.scrollIntoView({ behavior: 'smooth' })}
                   className="text-white/70 hover:text-[#C9A84C] font-semibold text-base flex items-center gap-2 transition-colors"
@@ -950,7 +946,9 @@ export default function WalkinPage() {
         </div>
       </section>
 
+      <ContactModal />
       <WhatsAppButton />
+      <ChatbotLena />
     </main>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Palette,
@@ -564,31 +565,43 @@ export default function HomePage() {
               <div className="space-y-5">
                 {[
                   {
-                    icon: Bell,
+                    img: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=160&h=160&fit=crop',
+                    alt: 'Smartphone avec notification push',
                     title: 'Push notifications instantanées',
                     desc: 'Envoyez des offres directement sur l\'écran de vos clients, sans application.',
                   },
                   {
-                    icon: Wallet,
+                    img: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=160&h=160&fit=crop',
+                    alt: 'Paiement NFC Apple Google Wallet',
                     title: 'Compatible Apple & Google Wallet',
                     desc: 'Ajout en 1 clic via QR code ou SMS. Aucune friction, adoption maximale.',
                   },
                   {
-                    icon: BarChart3,
+                    img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=160&h=160&fit=crop',
+                    alt: 'Dashboard analytics temps réel',
                     title: 'Dashboard temps réel',
                     desc: 'Suivez vos porteurs de carte, les visites et le ROI de vos campagnes.',
                   },
-                ].map(({ icon: Icon, title, desc }, i) => (
+                ].map(({ img, alt, title, desc }, i) => (
                   <motion.div
                     key={title}
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: i * 0.1 }}
-                    className="flex items-start gap-4"
+                    className="flex items-start gap-4 group"
                   >
-                    <div className="w-10 h-10 bg-[#C9A84C]/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Icon size={20} className="text-[#C9A84C]" strokeWidth={1.8} />
+                    <div className="relative w-[80px] h-[80px] rounded-2xl overflow-hidden flex-shrink-0">
+                      <Image
+                        src={img}
+                        alt={alt}
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        sizes="80px"
+                      />
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"
+                        style={{ background: 'linear-gradient(135deg, rgba(107,33,168,0.55) 0%, rgba(13,27,42,0.55) 100%)' }}
+                      />
                     </div>
                     <div>
                       <h3 className="font-semibold text-[#0A0A0A] mb-1 font-inter">{title}</h3>
@@ -598,17 +611,16 @@ export default function HomePage() {
                 ))}
               </div>
 
-              <motion.a
-                href="https://wa.me/33756959078?text=Bonjour%2C%20je%20veux%20en%20savoir%20plus%20sur%20la%20carte%20fid%C3%A9lit%C3%A9%20digitale..."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 btn-gold mt-10 px-7 py-3.5 rounded-xl font-bold text-sm"
-                whileHover={{ scale: 1.03 }}
-                aria-label="En savoir plus sur la carte fidélité digitale"
-              >
-                <CreditCard size={16} />
-                En savoir plus sur WalKin
-              </motion.a>
+              <Link href="/walkin" passHref legacyBehavior>
+                <motion.a
+                  className="inline-flex items-center gap-2 btn-gold mt-10 px-7 py-3.5 rounded-xl font-bold text-sm"
+                  whileHover={{ scale: 1.03 }}
+                  aria-label="En savoir plus sur WalKin — carte fidélité digitale"
+                >
+                  <CreditCard size={16} />
+                  En savoir plus sur WalKin
+                </motion.a>
+              </Link>
             </AnimatedSection>
 
             {/* Right — Mockup */}
