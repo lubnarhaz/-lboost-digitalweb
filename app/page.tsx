@@ -17,8 +17,6 @@ import {
   Bell,
   BarChart3,
   Wallet,
-  ChevronRight,
-  ChevronLeft,
   Plus,
   Minus,
   Loader2,
@@ -184,7 +182,7 @@ const services = [
 const packs = [
   {
     title: 'Pack Starter',
-    price: '990€',
+    price: '1 490€',
     badge: 'Idéal pour démarrer',
     featured: false,
     features: [
@@ -198,7 +196,7 @@ const packs = [
   },
   {
     title: 'Pack Business',
-    price: '1 990€',
+    price: '2 490€',
     badge: 'Le plus populaire ★',
     featured: true,
     features: [
@@ -255,28 +253,74 @@ const steps = [
 // ── Testimonials ──────────────────────────────────────────────────────────────
 const testimonials = [
   {
-    name: 'Sophie Marchand',
-    role: 'Fondatrice — Atelier SM Déco',
-    quote:
-      'L-BOOST a complètement transformé notre image en ligne. En 3 mois, notre trafic a triplé et les demandes de devis explosent. Un travail remarquable, à la hauteur de leur réputation.',
-    avatar: 'SM',
+    name: 'Sophie M.',
+    role: 'Fondatrice — Atelier Déco',
+    quote: 'Franchement je m\'attendais pas à des résultats aussi rapides. En 6 semaines notre site tourne, les demandes de devis arrivent toutes seules. Je recommande les yeux fermés.',
+    photo: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=80&h=80&fit=crop&crop=face',
     stars: 5,
   },
   {
-    name: 'Thomas Renaud',
-    role: 'Gérant — Boulangerie Renaud',
-    quote:
-      'La carte fidélité digitale WalKin a révolutionné ma relation client. Mes clients reviennent plus souvent et les notifications push fonctionnent vraiment. ROI immédiat, je recommande à 200%.',
-    avatar: 'TR',
+    name: 'Karim B.',
+    role: 'Gérant — Restaurant La Table',
+    quote: 'On avait peur que ce soit trop technique pour nous. Pas du tout, ils ont géré tout de A à Z. Notre page Google Maps est en top 3 maintenant, les réservations ont augmenté de 60%.',
+    photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face',
     stars: 5,
   },
   {
-    name: 'Inès Bouchard',
-    role: 'Directrice — Cabinet IB Conseil',
-    quote:
-      'Le chatbot IA développé par L-BOOST qualifie nos leads automatiquement. On a réduit le temps de traitement des demandes de 70%. Une équipe sérieuse, réactive et vraiment experte.',
-    avatar: 'IB',
+    name: 'Nadia L.',
+    role: 'Gérante — Institut Beauté',
+    quote: 'WalKin c\'est vraiment une bonne idée. Mes clientes adorent avoir leur carte dans le téléphone et depuis que j\'envoie des notifs le mardi matin, ma semaine est pleine le mercredi.',
+    photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=80&h=80&fit=crop&crop=face',
+    stars: 4,
+  },
+  {
+    name: 'Thomas R.',
+    role: 'Directeur — Salle de sport FitZone',
+    quote: 'Le chatbot répond à mes prospects même à 23h. J\'ai eu des inscriptions de gens qui avaient posé la question la nuit et qui se sont retrouvés avec un rdv le lendemain matin.',
+    photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&crop=face',
     stars: 5,
+  },
+  {
+    name: 'Inès D.',
+    role: 'Coach — ID Performance',
+    quote: 'J\'avais un Instagram mais pas de site, pas de branding cohérent. L-BOOST a tout remis en ordre. Aujourd\'hui j\'ai une image pro qui reflète vraiment ce que je fais.',
+    photo: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=80&h=80&fit=crop&crop=face',
+    stars: 5,
+  },
+  {
+    name: 'Youcef A.',
+    role: 'Fondateur — Auto-École Avenir',
+    quote: 'Site livré en 8 jours, design moderne, et surtout il tourne bien sur mobile. Nos nouveaux élèves trouvent maintenant l\'auto-école en cherchant sur Google alors qu\'avant c\'était invisible.',
+    photo: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=80&h=80&fit=crop&crop=face',
+    stars: 5,
+  },
+  {
+    name: 'Laura F.',
+    role: 'Responsable — Pharmacie Centrale',
+    quote: 'Les automatisations qu\'ils ont mises en place nous font gagner facilement 2h par jour sur les tâches répétitives. L\'équipe est disponible, répond vite, c\'est agréable de travailler avec eux.',
+    photo: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&crop=face',
+    stars: 4,
+  },
+  {
+    name: 'Mehdi C.',
+    role: 'CEO — Agence MC Immo',
+    quote: 'On cherchait quelqu\'un qui comprend vraiment les enjeux business, pas juste un développeur. L-BOOST a su allier la technique et la stratégie. Résultat : +40% de contacts qualifiés en 2 mois.',
+    photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face',
+    stars: 5,
+  },
+  {
+    name: 'Amira K.',
+    role: 'Créatrice — Boutique AK Mode',
+    quote: 'Mon site e-commerce est beau, rapide et mes clients commandent sans problème depuis leur téléphone. J\'avais essayé Shopify toute seule, galère totale. Là c\'est professionnel.',
+    photo: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop&crop=face',
+    stars: 5,
+  },
+  {
+    name: 'Romain G.',
+    role: 'Gérant — Café Le Comptoir',
+    quote: 'La carte fidélité WalKin a changé la relation avec mes habitués. Ils se sentent valorisés avec les offres personnalisées. En 3 mois j\'ai vu une vraie différence sur la fréquence de visite.',
+    photo: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=80&h=80&fit=crop&crop=face',
+    stars: 4,
   },
 ]
 
@@ -346,9 +390,7 @@ type InlineStatus = 'idle' | 'loading' | 'success' | 'error'
 
 export default function HomePage() {
   const { openModal } = useContactModal()
-  const [activeTestimonial, setActiveTestimonial] = useState(0)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
-  const carouselRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   // ── Inline form state ──────────────────────────────────────────────────────
   const [inlineForm, setInlineForm] = useState({
@@ -414,26 +456,6 @@ export default function HomePage() {
         : 'border-white/20 focus:border-[#C9A84C]'
     }`
 
-  // Autoplay carousel
-  useEffect(() => {
-    carouselRef.current = setInterval(() => {
-      setActiveTestimonial((prev) => (prev + 1) % testimonials.length)
-    }, 5000)
-    return () => {
-      if (carouselRef.current) clearInterval(carouselRef.current)
-    }
-  }, [])
-
-  const prevTestimonial = () => {
-    if (carouselRef.current) clearInterval(carouselRef.current)
-    setActiveTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length)
-  }
-
-  const nextTestimonial = () => {
-    if (carouselRef.current) clearInterval(carouselRef.current)
-    setActiveTestimonial((prev) => (prev + 1) % testimonials.length)
-  }
-
   return (
     <main className="overflow-x-hidden">
       <Navbar />
@@ -467,7 +489,7 @@ export default function HomePage() {
             className="inline-flex items-center gap-2 bg-[#C9A84C]/15 border border-[#C9A84C]/30 text-[#C9A84C] px-5 py-2 rounded-full text-xs font-semibold tracking-widest uppercase mb-8"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-[#C9A84C] animate-pulse" />
-            Agence Digitale Premium · France
+            Agence Web à Troyes · Aube · Grand Est
           </motion.div>
 
           {/* H1 */}
@@ -478,8 +500,9 @@ export default function HomePage() {
             className="font-playfair font-bold text-white leading-tight mb-6"
             style={{ fontSize: 'clamp(38px, 6vw, 76px)' }}
           >
-            Votre présence digitale,{' '}
+            Agence Web à Troyes —{' '}
             <br className="hidden sm:block" />
+            votre présence digitale{' '}
             <span className="text-[#C9A84C]">réinventée.</span>
           </motion.h1>
 
@@ -529,7 +552,7 @@ export default function HomePage() {
               href="https://wa.me/33756959078?text=Bonjour%2C%20je%20souhaite%20un%20devis%20pour..."
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-white/80 hover:text-[#C9A84C] font-semibold text-base transition-colors duration-200 border border-white/20 hover:border-[#C9A84C]/50 px-8 py-4 rounded-2xl"
+              className="flex items-center gap-2 text-white/80 hover:text-[#C9A84C] font-semibold text-sm sm:text-base transition-colors duration-200 border border-white/20 hover:border-[#C9A84C]/50 px-5 sm:px-8 py-4 rounded-2xl"
               whileHover={{ scale: 1.02 }}
               aria-label="Parler à un expert L-BOOST sur WhatsApp"
             >
@@ -622,7 +645,7 @@ export default function HomePage() {
             </p>
           </AnimatedSection>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
             {packs.map((pack, i) => (
               <PackCard key={pack.title} {...pack} index={i} />
             ))}
@@ -657,7 +680,7 @@ export default function HomePage() {
       ════════════════════════════════════════════════ */}
       <section className="bg-[#F8F7F4] py-20 md:py-28 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             {/* Left */}
             <AnimatedSection direction="right">
               <div className="section-divider mx-0" />
@@ -812,9 +835,9 @@ export default function HomePage() {
       {/* ════════════════════════════════════════════════
           SECTION 7 — TÉMOIGNAGES
       ════════════════════════════════════════════════ */}
-      <section id="temoignages" className="bg-[#F8F7F4] py-20 md:py-28">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <AnimatedSection className="text-center mb-14">
+      <section id="temoignages" className="bg-[#F8F7F4] py-20 md:py-28 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-14">
+          <AnimatedSection className="text-center">
             <div className="section-divider" />
             <h2
               className="font-playfair font-bold text-[#0A0A0A] mb-4"
@@ -826,76 +849,84 @@ export default function HomePage() {
               Des entrepreneurs qui ont transformé leur présence digitale.
             </p>
           </AnimatedSection>
+        </div>
 
-          {/* Carousel */}
-          <div className="relative">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeTestimonial}
-                initial={{ opacity: 0, x: 40 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -40 }}
-                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className="bg-white rounded-3xl p-8 md:p-12 shadow-card"
+        {/* Marquee row 1 */}
+        <div className="overflow-hidden mb-4">
+          <div className="testi-track-left">
+            {[...testimonials, ...testimonials].map((t, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-2xl p-6 shadow-card border border-[#0A0A0A]/5 hover:border-[#C9A84C]/30 hover:shadow-gold transition-all duration-300 flex-shrink-0"
+                style={{ width: 320 }}
               >
                 {/* Stars */}
-                <div className="flex gap-1 mb-6">
-                  {Array.from({ length: testimonials[activeTestimonial].stars }).map((_, i) => (
-                    <span key={i} className="text-[#C9A84C] text-xl">★</span>
+                <div className="flex gap-0.5 mb-4">
+                  {Array(t.stars).fill(0).map((_, j) => (
+                    <span key={j} className="text-[#C9A84C] text-sm">★</span>
                   ))}
                 </div>
-
                 {/* Quote */}
-                <blockquote className="font-playfair text-xl md:text-2xl text-[#0A0A0A] leading-relaxed mb-8 italic">
-                  &ldquo;{testimonials[activeTestimonial].quote}&rdquo;
+                <blockquote className="font-playfair text-[#0A0A0A] text-base leading-relaxed italic mb-5">
+                  &ldquo;{t.quote}&rdquo;
                 </blockquote>
-
                 {/* Author */}
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-[#C9A84C] flex items-center justify-center text-[#0A0A0A] font-bold font-playfair text-sm">
-                    {testimonials[activeTestimonial].avatar}
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#C9A84C]/30 flex-shrink-0 bg-[#C9A84C]/10">
+                    <Image
+                      src={t.photo}
+                      alt={t.name}
+                      width={40}
+                      height={40}
+                      className="w-full h-full object-cover"
+                      unoptimized
+                    />
                   </div>
                   <div>
-                    <p className="font-semibold text-[#0A0A0A] font-inter">
-                      {testimonials[activeTestimonial].name}
-                    </p>
-                    <p className="text-[#6B6B6B] text-sm font-inter">
-                      {testimonials[activeTestimonial].role}
-                    </p>
+                    <p className="font-semibold text-[#0A0A0A] text-sm font-inter">{t.name}</p>
+                    <p className="text-[#6B6B6B] text-xs font-inter">{t.role}</p>
                   </div>
                 </div>
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Controls */}
-            <div className="flex items-center justify-center gap-4 mt-8">
-              <button
-                onClick={prevTestimonial}
-                className="w-10 h-10 rounded-full border border-[#0A0A0A]/20 hover:border-[#C9A84C] hover:bg-[#C9A84C]/10 flex items-center justify-center text-[#0A0A0A] hover:text-[#C9A84C] transition-all"
-                aria-label="Témoignage précédent"
-              >
-                <ChevronLeft size={18} />
-              </button>
-              <div className="flex gap-2">
-                {testimonials.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setActiveTestimonial(i)}
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      i === activeTestimonial ? 'bg-[#C9A84C] w-6' : 'bg-[#0A0A0A]/20'
-                    }`}
-                    aria-label={`Voir témoignage ${i + 1}`}
-                  />
-                ))}
               </div>
-              <button
-                onClick={nextTestimonial}
-                className="w-10 h-10 rounded-full border border-[#0A0A0A]/20 hover:border-[#C9A84C] hover:bg-[#C9A84C]/10 flex items-center justify-center text-[#0A0A0A] hover:text-[#C9A84C] transition-all"
-                aria-label="Témoignage suivant"
+            ))}
+          </div>
+        </div>
+
+        {/* Marquee row 2 — reversed */}
+        <div className="overflow-hidden">
+          <div className="testi-track-right">
+            {[...testimonials.slice().reverse(), ...testimonials.slice().reverse()].map((t, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-2xl p-6 shadow-card border border-[#0A0A0A]/5 hover:border-[#C9A84C]/30 hover:shadow-gold transition-all duration-300 flex-shrink-0"
+                style={{ width: 320 }}
               >
-                <ChevronRight size={18} />
-              </button>
-            </div>
+                <div className="flex gap-0.5 mb-4">
+                  {Array(t.stars).fill(0).map((_, j) => (
+                    <span key={j} className="text-[#C9A84C] text-sm">★</span>
+                  ))}
+                </div>
+                <blockquote className="font-playfair text-[#0A0A0A] text-base leading-relaxed italic mb-5">
+                  &ldquo;{t.quote}&rdquo;
+                </blockquote>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#C9A84C]/30 flex-shrink-0 bg-[#C9A84C]/10">
+                    <Image
+                      src={t.photo}
+                      alt={t.name}
+                      width={40}
+                      height={40}
+                      className="w-full h-full object-cover"
+                      unoptimized
+                    />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-[#0A0A0A] text-sm font-inter">{t.name}</p>
+                    <p className="text-[#6B6B6B] text-xs font-inter">{t.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -1199,6 +1230,177 @@ export default function HomePage() {
           </AnimatedSection>
         </div>
       </section>
+
+      {/* ════════════════════════════════════════════════
+          SECTION — DERNIERS ARTICLES BLOG
+      ════════════════════════════════════════════════ */}
+      <section className="bg-[#F8F7F4] py-16 md:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AnimatedSection className="text-center mb-12">
+            <div className="section-divider" />
+            <h2 className="font-playfair font-bold text-[#0A0A0A] mb-3" style={{ fontSize: 'clamp(24px, 3.5vw, 40px)' }}>
+              Conseils & Ressources
+            </h2>
+            <p className="text-[#6B6B6B] font-inter text-sm">Nos articles pour booster votre présence digitale à Troyes.</p>
+          </AnimatedSection>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                slug: 'agence-web-troyes',
+                cat: 'Création Web',
+                title: 'Pourquoi choisir une agence web locale à Troyes ?',
+                excerpt: 'Proximité, réactivité et connaissance du marché local : les vrais avantages de travailler avec une agence troyenne.',
+                img: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=600&h=340&fit=crop',
+                date: '15 jan. 2024',
+              },
+              {
+                slug: 'seo-local-troyes',
+                cat: 'SEO',
+                title: 'SEO local à Troyes : apparaître en tête de Google',
+                excerpt: 'Guide complet pour optimiser votre référencement local à Troyes : GBP, mots-clés, avis clients.',
+                img: 'https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?w=600&h=340&fit=crop',
+                date: '22 jan. 2024',
+              },
+              {
+                slug: 'carte-fidelite-digitale-commercants-troyes',
+                cat: 'Fidélisation',
+                title: 'Carte de fidélité digitale : la révolution pour les commerçants troyens',
+                excerpt: 'WalKin remplace les cartes papier. Apple Wallet, push notifications, zéro application à télécharger.',
+                img: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=340&fit=crop',
+                date: '29 jan. 2024',
+              },
+            ].map((article) => (
+              <AnimatedItem key={article.slug}>
+                <a href={`/blog/${article.slug}`} className="group block bg-white rounded-2xl overflow-hidden shadow-card hover:shadow-gold transition-all duration-300 hover:-translate-y-1">
+                  <div className="relative overflow-hidden h-44">
+                    <Image
+                      src={article.img}
+                      alt={article.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      unoptimized
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                    <span className="absolute top-3 left-3 bg-[#C9A84C] text-[#0A0A0A] text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                      {article.cat}
+                    </span>
+                  </div>
+                  <div className="p-5">
+                    <p className="text-[#6B6B6B] text-xs font-inter mb-2">{article.date}</p>
+                    <h3 className="font-playfair font-bold text-[#0A0A0A] text-base leading-snug mb-2 group-hover:text-[#C9A84C] transition-colors">
+                      {article.title}
+                    </h3>
+                    <p className="text-[#6B6B6B] text-sm font-inter leading-relaxed line-clamp-2">{article.excerpt}</p>
+                    <span className="inline-flex items-center gap-1 text-[#C9A84C] text-sm font-semibold mt-3 group-hover:gap-2 transition-all">
+                      Lire l&apos;article →
+                    </span>
+                  </div>
+                </a>
+              </AnimatedItem>
+            ))}
+          </div>
+          <div className="text-center mt-8">
+            <a href="/blog" className="inline-flex items-center gap-2 border border-[#0A0A0A]/20 hover:border-[#C9A84C] text-[#0A0A0A] hover:text-[#C9A84C] px-6 py-3 rounded-xl font-inter font-medium text-sm transition-all duration-200">
+              Voir tous les articles
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════
+          SECTION — AGENCE WEB À TROYES (SEO local)
+      ════════════════════════════════════════════════ */}
+      <section className="bg-white py-16 md:py-20">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <AnimatedSection>
+            <div className="section-divider" />
+            <h2 className="font-playfair font-bold text-[#0A0A0A] mb-6" style={{ fontSize: 'clamp(24px, 3.5vw, 40px)' }}>
+              Votre Agence Digitale à Troyes
+            </h2>
+            <div className="text-[#6B6B6B] font-inter text-base leading-relaxed space-y-4 mb-8 text-left">
+              <p>
+                Basée à <strong className="text-[#0A0A0A]">Troyes</strong> au cœur de l&apos;Aube,{' '}
+                <strong className="text-[#0A0A0A]">L-BOOST Digitalweb</strong> accompagne les entrepreneurs et
+                commerçants troyens dans leur transformation digitale. De la création de site web à la stratégie SEO
+                locale, en passant par le branding et la fidélisation client avec WalKin, nous gérons votre présence
+                digitale de A à Z.
+              </p>
+              <p>
+                Nous intervenons dans toute la région :{' '}
+                <strong className="text-[#0A0A0A]">Troyes, Bar-sur-Aube, Romilly-sur-Seine, Nogent-sur-Seine</strong>{' '}
+                et l&apos;ensemble du <strong className="text-[#0A0A0A]">département de l&apos;Aube</strong>.
+              </p>
+              <p>
+                Notre engagement : des <strong className="text-[#0A0A0A]">sites web premium livrés en 7 jours</strong>,
+                optimisés pour Google, et conçus pour convertir vos visiteurs en clients fidèles.
+              </p>
+            </div>
+            <motion.button
+              onClick={openModal}
+              className="btn-gold px-8 py-4 rounded-2xl font-bold text-base font-inter"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              Obtenir un devis gratuit
+            </motion.button>
+          </AnimatedSection>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════
+          FAQ SCHEMA.ORG (Rich Snippets Google)
+      ════════════════════════════════════════════════ */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            'mainEntity': [
+              {
+                '@type': 'Question',
+                'name': 'Combien coûte la création d\'un site web à Troyes ?',
+                'acceptedAnswer': {
+                  '@type': 'Answer',
+                  'text': 'Nos tarifs débutent à partir de 490€ pour un site vitrine professionnel à Troyes. Chaque projet est unique, contactez-nous pour un devis gratuit sous 2h.',
+                },
+              },
+              {
+                '@type': 'Question',
+                'name': 'En combien de temps livrez-vous un site web ?',
+                'acceptedAnswer': {
+                  '@type': 'Answer',
+                  'text': 'Nous livrons vos projets en 7 jours ouvrés grâce à notre processus optimisé. Pour des projets plus complexes (e-commerce, fonctionnalités avancées), comptez 2 à 3 semaines.',
+                },
+              },
+              {
+                '@type': 'Question',
+                'name': 'Proposez-vous le SEO local à Troyes ?',
+                'acceptedAnswer': {
+                  '@type': 'Answer',
+                  'text': 'Oui, nous optimisons votre référencement local à Troyes : Google Business Profile, Schema.org LocalBusiness, mots-clés locaux et création de contenu géolocalisé pour l\'Aube et le Grand Est.',
+                },
+              },
+              {
+                '@type': 'Question',
+                'name': 'Qu\'est-ce que WalKin ?',
+                'acceptedAnswer': {
+                  '@type': 'Answer',
+                  'text': 'WalKin est notre solution de carte de fidélité digitale compatible Apple Wallet et Google Wallet. Vos clients reçoivent leur carte sans télécharger d\'application, directement par QR code ou SMS.',
+                },
+              },
+              {
+                '@type': 'Question',
+                'name': 'Travaillez-vous avec des clients hors de Troyes ?',
+                'acceptedAnswer': {
+                  '@type': 'Answer',
+                  'text': 'Oui ! Même si nous sommes basés à Troyes dans l\'Aube, nous travaillons avec des clients dans toute la France, 100% en remote.',
+                },
+              },
+            ],
+          }),
+        }}
+      />
 
       <Footer />
     </main>
