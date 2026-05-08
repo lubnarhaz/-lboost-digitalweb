@@ -114,22 +114,18 @@ export default function Navbar() {
                           onMouseLeave={() => setSecteursOpen(false)}
                           className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-64 bg-[#0A0A0A]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden"
                         >
-                          {SECTEURS.map((secteur, i) => {
-                            const Icon = secteur.icon
-                            return (
+                          {SECTEURS.map((secteur, i) => (
                               <Link
                                 key={secteur.slug}
                                 href={`/secteurs/${secteur.slug}`}
                                 onClick={() => setSecteursOpen(false)}
-                                className={`flex items-center gap-3 px-4 py-3 text-white/60 hover:text-[#C9A84C] hover:bg-white/5 transition-all duration-200 ${
+                                className={`block px-4 py-3 text-white/60 hover:text-[#C9A84C] hover:bg-white/5 text-sm font-inter transition-all duration-200 ${
                                   i < SECTEURS.length - 1 ? 'border-b border-white/5' : ''
                                 }`}
                               >
-                                <Icon size={16} style={{ color: secteur.couleurAccent }} />
-                                <span className="text-sm font-inter">{secteur.nom}</span>
+                                {secteur.nom}
                               </Link>
-                            )
-                          })}
+                          ))}
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -225,20 +221,16 @@ export default function Navbar() {
                           className="overflow-hidden"
                         >
                           <div className="pl-4 pt-2 pb-3 space-y-2">
-                            {SECTEURS.map((secteur) => {
-                              const Icon = secteur.icon
-                              return (
+                            {SECTEURS.map((secteur) => (
                                 <Link
                                   key={secteur.slug}
                                   href={`/secteurs/${secteur.slug}`}
                                   onClick={() => setMenuOpen(false)}
-                                  className="flex items-center gap-3 py-2 text-white/50 hover:text-[#C9A84C] transition-colors"
+                                  className="block py-2 text-white/50 hover:text-[#C9A84C] text-base font-inter transition-colors"
                                 >
-                                  <Icon size={16} style={{ color: secteur.couleurAccent }} />
-                                  <span className="text-base font-inter">{secteur.nom}</span>
+                                  {secteur.nom}
                                 </Link>
-                              )
-                            })}
+                            ))}
                           </div>
                         </motion.div>
                       )}
