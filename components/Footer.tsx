@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { MessageCircle, Instagram, Facebook, Linkedin, ArrowUpRight } from 'lucide-react'
@@ -56,7 +57,7 @@ export default function Footer() {
               Votre partenaire digital haut de gamme pour transformer votre présence en ligne en véritable moteur de croissance.
             </p>
             {/* Socials */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 mb-6">
               {socials.map(({ icon: Icon, href, label }) => (
                 <motion.a
                   key={label}
@@ -71,6 +72,25 @@ export default function Footer() {
                 </motion.a>
               ))}
             </div>
+            {/* QR Linktree */}
+            <a
+              href="https://linktr.ee/LBOOSTDigitalweb"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block group"
+              aria-label="Linktree L-BOOST"
+            >
+              <div className="w-20 h-20 rounded-xl overflow-hidden border border-white/10 group-hover:border-[#C9A84C]/40 transition-all duration-300">
+                <Image
+                  src="/qr-linktree.jpg"
+                  alt="QR Code Linktree L-BOOST"
+                  width={80}
+                  height={80}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <p className="text-white/30 text-[10px] font-inter mt-1.5 text-center group-hover:text-[#C9A84C]/60 transition-colors">Tous nos liens</p>
+            </a>
           </div>
 
           {/* Services */}

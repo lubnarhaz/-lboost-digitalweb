@@ -5,66 +5,14 @@ import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Send, Minimize2 } from 'lucide-react'
 
-// ── Knowledge base ────────────────────────────────────────────────────────────
-const KB: Array<{ keywords: string[]; answer: string }> = [
-  {
-    keywords: ['walkin', "c'est quoi", "qu'est-ce", 'présentation', 'produit'],
-    answer:
-      "WalKin est une solution de carte de fidélité 100% digitale 🎯\nVos clients reçoivent leur carte directement dans Apple Wallet ou Google Wallet, sans application à télécharger ! Vous pouvez leur envoyer des push notifications et suivre vos résultats en temps réel.\nVous voulez en savoir plus ?",
-  },
-  {
-    keywords: ['prix', 'tarif', 'coût', 'combien', 'abonnement', 'offre'],
-    answer:
-      "Nos tarifs sont personnalisés selon la taille de votre établissement et vos besoins 💼\nJe vous invite à remplir notre formulaire de contact ou à nous écrire sur WhatsApp pour recevoir une proposition adaptée sous 24h !",
-  },
-  {
-    keywords: ['comment', 'fonctionne', 'marche', 'étapes', 'mise en place', 'installation'],
-    answer:
-      "C'est très simple en 3 étapes ✨\n\n1️⃣ On configure votre programme de fidélité\n2️⃣ Vos clients scannent un QR code ou reçoivent un SMS\n3️⃣ La carte s'ajoute en 1 clic dans leur Wallet !\n\nLa mise en place prend 48 à 72h après validation.",
-  },
-  {
-    keywords: ['rendez-vous', 'rdv', 'démo', 'démonstration', 'rappel', 'callback', 'appel'],
-    answer:
-      "Avec plaisir ! 📅 Vous pouvez nous contacter via :\n• Le formulaire de contact sur cette page\n• WhatsApp au +33 7 56 95 90 78\n\nOn vous répond sous 24h pour fixer un créneau qui vous convient !",
-  },
-  {
-    keywords: ['audit', 'diagnostic', 'analyse', 'gratuit', 'évaluation'],
-    answer:
-      "Excellente initiative ! 🔍 Nous proposons un audit GRATUIT de votre stratégie de fidélisation client.\n\nRemplissez le formulaire de contact en mentionnant 'Audit' dans votre message, ou contactez-nous directement sur WhatsApp. Notre équipe vous recontacte sous 24h !",
-  },
-  {
-    keywords: ['lboost', 'agence', 'qui êtes', 'équipe', 'société', 'entreprise'],
-    answer:
-      "L-BOOST est une agence digitale spécialisée dans la croissance des commerces locaux 🚀\nNous développons des outils sur-mesure comme WalKin pour aider les commerçants à fidéliser leurs clients et augmenter leur chiffre d'affaires.\nDes questions sur nos autres services ?",
-  },
-  {
-    keywords: ['contact', 'email', 'téléphone', 'joindre', 'écrire', 'adresse'],
-    answer:
-      "Vous pouvez nous joindre via :\n📧 Email : via le formulaire de contact\n💬 WhatsApp : +33 7 56 95 90 78\n\nOn répond généralement dans la journée ! 😊",
-  },
-  {
-    keywords: ['site', 'web', 'vitrine', 'ecommerce', 'landing'],
-    answer:
-      "Nous créons des sites web premium en Next.js — sites vitrines, e-commerce, landing pages 🌐\nRapides, SEO-optimisés et au design sur-mesure. Un projet en tête ? Contactez-nous et on vous fait une proposition !",
-  },
-  {
-    keywords: ['branding', 'logo', 'identité', 'charte', 'graphique'],
-    answer:
-      "Notre service Branding Complet comprend : logo, favicon, bannières réseaux sociaux et charte graphique complète livrée en PDF 🎨\nUne identité visuelle cohérente qui inspire confiance dès le premier regard !",
-  },
-]
-
-const DEFAULT_ANSWER =
-  "Je ne suis pas sûre de comprendre votre question 😊\nVous pouvez me demander des infos sur WalKin, nos tarifs, comment ça fonctionne, ou prendre rendez-vous.\n\nSinon, notre équipe est disponible directement sur WhatsApp ! 💬"
-
 const WELCOME =
-  "Bonjour ! 👋 Je suis Lena, votre conseillère L-BOOST.\nComment puis-je vous aider aujourd'hui ? 😊"
+  "Bonjour, je suis Lena, conseillere chez L-BOOST DigitalWeb. Vous avez un projet en tete, ou vous cherchez encore a definir ce dont vous avez besoin ?"
 
 const SUGGESTIONS = [
-  "💳 C'est quoi WalKin ?",
-  "💰 Tarifs",
-  "📅 Prendre RDV",
-  "🔍 Audit gratuit",
+  "J'ai un commerce",
+  "Je veux un site web",
+  "C'est quoi WalKin ?",
+  "Vos tarifs",
 ]
 
 const LENA_AVATAR = 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=face'
@@ -79,14 +27,6 @@ interface Msg {
 
 function getTime() {
   return new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-}
-
-function getBotAnswer(input: string): string {
-  const lower = input.toLowerCase()
-  for (const entry of KB) {
-    if (entry.keywords.some((kw) => lower.includes(kw))) return entry.answer
-  }
-  return DEFAULT_ANSWER
 }
 
 // ── Lena Avatar ───────────────────────────────────────────────────────────────
@@ -170,16 +110,32 @@ export default function ChatbotLena() {
     setMsgs((prev) => [...prev, { id: nextId.current++, role: 'bot', text, ts: getTime() }])
   }
 
-  function sendMessage(text: string) {
+  async function sendMessage(text: string) {
     if (!text.trim()) return
     const userText = text.trim()
     setInput('')
-    setMsgs((prev) => [...prev, { id: nextId.current++, role: 'user', text: userText, ts: getTime() }])
+    const newMsgs: Msg[] = [...msgs, { id: nextId.current++, role: 'user', text: userText, ts: getTime() }]
+    setMsgs(newMsgs)
     setTyping(true)
-    setTimeout(() => {
+
+    // Build conversation history for API
+    const apiMessages = newMsgs
+      .filter((m) => m.role === 'user' || m.role === 'bot')
+      .map((m) => ({ role: m.role === 'user' ? 'user' as const : 'assistant' as const, content: m.text }))
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: apiMessages }),
+      })
+      const data = await res.json()
       setTyping(false)
-      pushBot(getBotAnswer(userText))
-    }, 900 + Math.random() * 500)
+      pushBot(data.reply || "Excusez-moi, je n'ai pas pu traiter votre demande. Contactez-nous directement sur WhatsApp au 07 56 95 90 78.")
+    } catch {
+      setTyping(false)
+      pushBot("Un souci technique de mon cote. N'hesitez pas a nous contacter directement sur WhatsApp au 07 56 95 90 78.")
+    }
   }
 
   const handleOpen = () => {
