@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Send, Minimize2 } from 'lucide-react'
@@ -17,6 +17,9 @@ const SUGGESTIONS = [
 
 const LENA_AVATAR = 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=face'
 
+const STORAGE_KEY = 'lena-chat-history'
+const STORAGE_EXPIRY = 30 * 60 * 1000 // 30 minutes
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Msg {
   id: number
@@ -25,8 +28,60 @@ interface Msg {
   ts: string
 }
 
+interface StoredChat {
+  msgs: Msg[]
+  nextId: number
+  savedAt: number
+}
+
 function getTime() {
   return new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+}
+
+// ── Notification sound via Web Audio API ──────────────────────────────────────
+function playNotifSound() {
+  try {
+    const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+    osc.type = 'sine'
+    osc.frequency.setValueAtTime(880, ctx.currentTime)
+    osc.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + 0.08)
+    gain.gain.setValueAtTime(0.08, ctx.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15)
+    osc.start(ctx.currentTime)
+    osc.stop(ctx.currentTime + 0.15)
+  } catch {
+    // Web Audio not available
+  }
+}
+
+// ── Save/Load localStorage ────────────────────────────────────────────────────
+function saveChat(msgs: Msg[], nextId: number) {
+  try {
+    const data: StoredChat = { msgs, nextId, savedAt: Date.now() }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+  } catch {
+    // localStorage full or unavailable
+  }
+}
+
+function loadChat(): StoredChat | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return null
+    const data: StoredChat = JSON.parse(raw)
+    // Expire after 30 minutes of inactivity
+    if (Date.now() - data.savedAt > STORAGE_EXPIRY) {
+      localStorage.removeItem(STORAGE_KEY)
+      return null
+    }
+    return data
+  } catch {
+    return null
+  }
 }
 
 // ── Lena Avatar ───────────────────────────────────────────────────────────────
@@ -36,7 +91,7 @@ function LenaAvatar({ size = 36, online = true }: { size?: number; online?: bool
       <div className="rounded-full overflow-hidden border-2 border-white/50" style={{ width: size, height: size }}>
         <Image
           src={LENA_AVATAR}
-          alt="Lena — Conseillère L-BOOST"
+          alt="Lena — Conseillere L-BOOST"
           width={size}
           height={size}
           className="object-cover w-full h-full"
@@ -58,15 +113,36 @@ export default function ChatbotLena() {
   const [msgs, setMsgs] = useState<Msg[]>([])
   const [input, setInput] = useState('')
   const [typing, setTyping] = useState(false)
+  const [streamingText, setStreamingText] = useState('')
   const [welcomeShown, setWelcomeShown] = useState(false)
   const [showBubble, setShowBubble] = useState(false)
   const [showBadge, setShowBadge] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const nextId = useRef(1)
+  const abortRef = useRef<AbortController | null>(null)
+
+  // ── Load persisted conversation on mount ──
+  useEffect(() => {
+    const saved = loadChat()
+    if (saved && saved.msgs.length > 0) {
+      setMsgs(saved.msgs)
+      nextId.current = saved.nextId
+      setWelcomeShown(true)
+    }
+  }, [])
+
+  // ── Persist conversation on change ──
+  useEffect(() => {
+    if (msgs.length > 0) {
+      saveChat(msgs, nextId.current)
+    }
+  }, [msgs])
 
   // Badge "1 message non lu" after 4s
   useEffect(() => {
+    const saved = loadChat()
+    if (saved && saved.msgs.length > 0) return // Don't show badge for returning users
     const t = setTimeout(() => {
       if (!open) setShowBadge(true)
     }, 4000)
@@ -100,40 +176,90 @@ export default function ChatbotLena() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [msgs, typing])
+  }, [msgs, typing, streamingText])
 
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 200)
   }, [open])
 
-  function pushBot(text: string) {
+  const pushBot = useCallback((text: string) => {
     setMsgs((prev) => [...prev, { id: nextId.current++, role: 'bot', text, ts: getTime() }])
-  }
+  }, [])
 
   async function sendMessage(text: string) {
-    if (!text.trim()) return
+    if (!text.trim() || typing) return
     const userText = text.trim()
     setInput('')
     const newMsgs: Msg[] = [...msgs, { id: nextId.current++, role: 'user', text: userText, ts: getTime() }]
     setMsgs(newMsgs)
     setTyping(true)
+    setStreamingText('')
 
     // Build conversation history for API
     const apiMessages = newMsgs
       .filter((m) => m.role === 'user' || m.role === 'bot')
       .map((m) => ({ role: m.role === 'user' ? 'user' as const : 'assistant' as const, content: m.text }))
 
+    // Abort previous request if any
+    abortRef.current?.abort()
+    const controller = new AbortController()
+    abortRef.current = controller
+
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: apiMessages }),
+        body: JSON.stringify({ messages: apiMessages, stream: true }),
+        signal: controller.signal,
       })
-      const data = await res.json()
+
+      if (!res.ok || !res.body) {
+        throw new Error('Stream failed')
+      }
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let fullText = ''
+      let buffer = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        buffer = lines.pop() || ''
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue
+          const data = line.slice(6).trim()
+          if (data === '[DONE]') continue
+
+          try {
+            const parsed = JSON.parse(data)
+            if (parsed.text) {
+              fullText += parsed.text
+              setStreamingText(fullText)
+            }
+          } catch {
+            // skip
+          }
+        }
+      }
+
       setTyping(false)
-      pushBot(data.reply || "Excusez-moi, je n'ai pas pu traiter votre demande. Contactez-nous directement sur WhatsApp au 07 56 95 90 78.")
-    } catch {
+      setStreamingText('')
+
+      if (fullText) {
+        pushBot(fullText)
+        if (!open || document.hidden) playNotifSound()
+      } else {
+        pushBot("Excusez-moi, je n'ai pas pu traiter votre demande. Contactez-nous directement sur WhatsApp au 07 56 95 90 78.")
+      }
+    } catch (err) {
+      if ((err as Error).name === 'AbortError') return
       setTyping(false)
+      setStreamingText('')
       pushBot("Un souci technique de mon cote. N'hesitez pas a nous contacter directement sur WhatsApp au 07 56 95 90 78.")
     }
   }
@@ -142,6 +268,8 @@ export default function ChatbotLena() {
     setShowBadge(false)
     setOpen(true)
   }
+
+  const isFirstWelcome = msgs.length === 1 && msgs[0]?.text === WELCOME
 
   return (
     <>
@@ -157,7 +285,7 @@ export default function ChatbotLena() {
             style={{ bottom: 110, right: 20, boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}
           >
             <p className="text-[#0A0A0A] text-xs font-inter leading-relaxed">
-              👋 Bonjour ! Besoin d&apos;aide ? Je suis là !
+              Bonjour ! Besoin d&apos;aide pour votre projet ?
             </p>
             <div className="absolute -bottom-2 right-4 w-3 h-3 bg-white border-b border-r border-gray-100 rotate-45" />
           </motion.div>
@@ -198,7 +326,7 @@ export default function ChatbotLena() {
         )}
 
         {open ? (
-          /* Close button — same on mobile & desktop */
+          /* Close button */
           <motion.button
             initial={{ scale: 0.7, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -222,7 +350,7 @@ export default function ChatbotLena() {
                 animation: 'lenaPulse 3s ease-in-out infinite',
                 boxShadow: '0 0 20px rgba(201,168,76,0.3), 0 4px 16px rgba(0,0,0,0.5)',
               }}
-              aria-label="Parler à Lena, conseillère L-BOOST"
+              aria-label="Parler a Lena, conseillere L-BOOST"
             >
               <div className="relative w-[44px] h-[44px] rounded-full overflow-hidden flex-shrink-0">
                 <Image
@@ -243,7 +371,7 @@ export default function ChatbotLena() {
             <button
               onClick={handleOpen}
               className="desktop-only lena-trigger"
-              aria-label="Parler à Lena, conseillère L-BOOST"
+              aria-label="Parler a Lena, conseillere L-BOOST"
             >
               <div className="lena-avatar-wrapper">
                 <Image
@@ -256,10 +384,9 @@ export default function ChatbotLena() {
                 <span className="lena-online-dot" />
               </div>
               <div className="lena-trigger-text">
-                <div className="lena-trigger-name">Lena <span>✨</span></div>
-                <div className="lena-trigger-subtitle">Assistante WalKin • En ligne</div>
+                <div className="lena-trigger-name">Lena</div>
+                <div className="lena-trigger-subtitle">Conseillere L-BOOST · En ligne</div>
               </div>
-              <div className="lena-bubble-icon">💬</div>
             </button>
           </>
         )}
@@ -275,9 +402,7 @@ export default function ChatbotLena() {
             transition={{ type: 'spring', stiffness: 280, damping: 26 }}
             className={[
               'lena-window fixed flex flex-col overflow-hidden',
-              // Mobile: full-width bottom sheet
               'bottom-0 left-0 right-0 w-full h-[70vh] rounded-t-[20px] rounded-b-none',
-              // Desktop: corner popup
               'md:bottom-[100px] md:left-auto md:right-6 md:w-[340px] md:h-[480px] md:rounded-[20px]',
             ].join(' ')}
             style={{
@@ -285,19 +410,19 @@ export default function ChatbotLena() {
               zIndex: 9999,
             }}
             role="dialog"
-            aria-label="Chat avec Lena, conseillère L-BOOST"
+            aria-label="Chat avec Lena, conseillere L-BOOST"
           >
-            {/* Header — gold → violet gradient */}
+            {/* Header */}
             <div className="lena-header">
               <LenaAvatar size={40} online />
               <div className="flex-1">
                 <div className="flex items-center gap-1.5">
                   <p className="text-white font-semibold text-sm font-inter">Lena</p>
-                  <span className="text-white/80 text-[10px] font-inter">• L-BOOST</span>
+                  <span className="text-white/80 text-[10px] font-inter">· L-BOOST</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                  <p className="text-white/80 text-[10px] font-inter">Conseillère digitale · En ligne</p>
+                  <p className="text-white/80 text-[10px] font-inter">Conseillere digitale · En ligne</p>
                 </div>
               </div>
               <button
@@ -311,7 +436,7 @@ export default function ChatbotLena() {
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3" style={{ background: '#F5F5F7' }}>
-              {msgs.length === 0 && (
+              {msgs.length === 0 && !welcomeShown && (
                 <div className="text-center text-[#9CA3AF] text-[11px] font-inter pt-8">
                   Lena arrive dans quelques secondes...
                 </div>
@@ -342,13 +467,14 @@ export default function ChatbotLena() {
                     </p>
 
                     {/* Quick suggestions after welcome */}
-                    {msg.role === 'bot' && msg.text === WELCOME && (
+                    {msg.role === 'bot' && msg.text === WELCOME && isFirstWelcome && (
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {SUGGESTIONS.map((s) => (
                           <button
                             key={s}
                             onClick={() => sendMessage(s)}
-                            className="text-[10px] font-semibold font-inter bg-white border border-[#6B21A8]/30 text-[#6B21A8] hover:bg-[#6B21A8] hover:text-white px-2.5 py-1.5 rounded-full transition-all duration-200"
+                            disabled={typing}
+                            className="text-[10px] font-semibold font-inter bg-white border border-[#6B21A8]/30 text-[#6B21A8] hover:bg-[#6B21A8] hover:text-white px-2.5 py-1.5 rounded-full transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
                           >
                             {s}
                           </button>
@@ -359,9 +485,26 @@ export default function ChatbotLena() {
                 </motion.div>
               ))}
 
-              {/* Typing indicator */}
+              {/* Streaming message — shows text as it arrives */}
+              {typing && streamingText && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex justify-start items-end gap-2"
+                >
+                  <LenaAvatar size={28} online={false} />
+                  <div className="max-w-[76%]">
+                    <div className="px-3.5 py-2.5 rounded-2xl rounded-bl-sm text-xs font-inter leading-relaxed whitespace-pre-line bg-white text-[#0A0A0A] shadow-sm border border-gray-100">
+                      {streamingText}
+                      <span className="inline-block w-0.5 h-3 bg-[#6B21A8] ml-0.5 animate-pulse" />
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Typing indicator — only when no streaming text yet */}
               <AnimatePresence>
-                {typing && (
+                {typing && !streamingText && (
                   <motion.div
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -398,19 +541,20 @@ export default function ChatbotLena() {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input) }
                 }}
-                placeholder="Votre message..."
-                className="flex-1 rounded-xl px-3.5 py-2.5 text-white text-xs font-inter focus:outline-none transition-colors"
+                placeholder={typing ? 'Lena ecrit...' : 'Votre message...'}
+                disabled={typing}
+                className="flex-1 rounded-xl px-3.5 py-2.5 text-white text-xs font-inter focus:outline-none transition-colors disabled:opacity-50"
                 style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
                 maxLength={300}
-                aria-label="Message à Lena"
+                aria-label="Message a Lena"
               />
               <motion.button
                 onClick={() => sendMessage(input)}
-                disabled={!input.trim()}
+                disabled={!input.trim() || typing}
                 className="w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-30"
                 style={{ background: '#6B21A8' }}
-                whileHover={input.trim() ? { scale: 1.05 } : {}}
-                whileTap={input.trim() ? { scale: 0.92 } : {}}
+                whileHover={input.trim() && !typing ? { scale: 1.05 } : {}}
+                whileTap={input.trim() && !typing ? { scale: 0.92 } : {}}
                 aria-label="Envoyer"
               >
                 <Send size={14} className="text-white" />

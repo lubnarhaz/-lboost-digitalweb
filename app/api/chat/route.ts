@@ -119,7 +119,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'API key missing' }, { status: 500 })
   }
 
-  const { messages } = await req.json()
+  const { messages, stream: wantStream } = await req.json()
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -134,6 +134,7 @@ export async function POST(req: Request) {
         max_tokens: 300,
         system: SYSTEM_PROMPT,
         messages,
+        stream: !!wantStream,
       }),
     })
 
@@ -143,9 +144,63 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'API error' }, { status: 500 })
     }
 
+    // Streaming mode — forward SSE chunks to client
+    if (wantStream) {
+      const encoder = new TextEncoder()
+      const readable = new ReadableStream({
+        async start(controller) {
+          const reader = res.body!.getReader()
+          const decoder = new TextDecoder()
+          let buffer = ''
+
+          try {
+            while (true) {
+              const { done, value } = await reader.read()
+              if (done) break
+
+              buffer += decoder.decode(value, { stream: true })
+              const lines = buffer.split('\n')
+              buffer = lines.pop() || ''
+
+              for (const line of lines) {
+                if (!line.startsWith('data: ')) continue
+                const data = line.slice(6).trim()
+                if (data === '[DONE]') continue
+
+                try {
+                  const parsed = JSON.parse(data)
+                  if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
+                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: parsed.delta.text })}\n\n`))
+                  }
+                  if (parsed.type === 'message_stop') {
+                    controller.enqueue(encoder.encode('data: [DONE]\n\n'))
+                  }
+                } catch {
+                  // skip malformed JSON
+                }
+              }
+            }
+          } catch (e) {
+            console.error('Stream read error:', e)
+          } finally {
+            controller.enqueue(encoder.encode('data: [DONE]\n\n'))
+            controller.close()
+          }
+        },
+      })
+
+      return new Response(readable, {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          Connection: 'keep-alive',
+        },
+      })
+    }
+
+    // Non-streaming fallback
     const data = await res.json()
     const reply = data.content?.[0]?.text || ''
-
     return NextResponse.json({ reply })
   } catch (e) {
     console.error('Chat error:', e)
