@@ -145,39 +145,20 @@ export default function PackCard({
         </ul>
 
         {/* CTA */}
-        {price === 'Sur devis' ? (
-          <motion.button
-            onClick={openModal}
-            className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm tracking-wide transition-all duration-300 ${
-              featured
-                ? 'bg-[#C9A84C] text-[#0A0A0A] hover:bg-[#E4C46E] btn-gold'
-                : 'bg-white/10 text-white hover:bg-white/20 border border-white/20'
-            }`}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            aria-label="Demander un devis pour ce pack"
-          >
-            <MessageCircle size={16} />
-            Demander un devis
-          </motion.button>
-        ) : (
-          <motion.a
-            href="https://wa.me/33756959078?text=Bonjour%2C%20je%20souhaite%20un%20devis%20pour..."
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm tracking-wide transition-all duration-300 ${
-              featured
-                ? 'bg-[#C9A84C] text-[#0A0A0A] hover:bg-[#E4C46E] btn-gold'
-                : 'bg-white/10 text-white hover:bg-white/20 border border-white/20'
-            }`}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            aria-label={`Choisir le pack ${title}`}
-          >
-            <MessageCircle size={16} />
-            Choisir ce pack
-          </motion.a>
-        )}
+        <motion.button
+          onClick={openModal}
+          className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm tracking-wide transition-all duration-300 ${
+            featured
+              ? 'bg-[#C9A84C] text-[#0A0A0A] hover:bg-[#E4C46E] btn-gold'
+              : 'bg-white/10 text-white hover:bg-white/20 border border-white/20'
+          }`}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          aria-label={price === 'Sur devis' ? 'Demander un devis pour ce pack' : `Choisir le pack ${title}`}
+        >
+          <MessageCircle size={16} />
+          {price === 'Sur devis' ? 'Demander un devis' : 'Choisir ce pack'}
+        </motion.button>
       </motion.div>
     </motion.div>
   )
