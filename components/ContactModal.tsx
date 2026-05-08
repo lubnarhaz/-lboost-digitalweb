@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Send, Loader2, CheckCircle, AlertCircle, MessageCircle, FileText, Phone, Search } from 'lucide-react'
+import { X, Send, Loader2, CheckCircle, AlertCircle, MessageCircle, FileText, Phone, Sparkles, ArrowLeft } from 'lucide-react'
 
 const GOOGLE_SCRIPT_URL =
   'https://script.google.com/macros/s/AKfycbwkYtvO_-65toBky_2Kqoz3MQA2UKsAXoTZUKBJW6_FKLBDBk8Wpf8r6CVrVHFqDcge/exec'
@@ -31,6 +31,44 @@ const NB_CLIENTS = [
   { value: '500-2000', label: '500 – 2 000' },
   { value: '2000-5000', label: '2 000 – 5 000' },
   { value: 'Plus de 5000', label: 'Plus de 5 000' },
+]
+
+const contactOptions = [
+  {
+    id: 'form',
+    icon: FileText,
+    title: 'Remplir le formulaire',
+    desc: 'Réponse personnalisée sous 24h',
+    color: '#C9A84C',
+    bgFrom: 'from-[#C9A84C]/8',
+    bgTo: 'to-[#C9A84C]/3',
+    borderHover: 'hover:border-[#C9A84C]/50',
+    glowColor: 'rgba(201,168,76,0.15)',
+  },
+  {
+    id: 'whatsapp',
+    icon: MessageCircle,
+    title: 'WhatsApp',
+    desc: 'Réponse dans la journée',
+    color: '#25D366',
+    bgFrom: 'from-[#25D366]/8',
+    bgTo: 'to-[#25D366]/3',
+    borderHover: 'hover:border-[#25D366]/50',
+    glowColor: 'rgba(37,211,102,0.15)',
+    href: 'https://wa.me/33756959078?text=Bonjour%2C%20je%20souhaite%20un%20devis%20pour%20mon%20projet%20digital.',
+  },
+  {
+    id: 'phone',
+    icon: Phone,
+    title: 'Appeler',
+    desc: '07 56 95 90 78 — lun-ven, 9h-18h',
+    color: '#818CF8',
+    bgFrom: 'from-[#818CF8]/8',
+    bgTo: 'to-[#818CF8]/3',
+    borderHover: 'hover:border-[#818CF8]/50',
+    glowColor: 'rgba(129,140,248,0.15)',
+    href: 'tel:+33756959078',
+  },
 ]
 
 interface ContactModalProps {
@@ -67,7 +105,6 @@ export default function ContactModal({
     message: '',
   })
 
-  // Reset to choice step when modal opens
   useEffect(() => {
     if (open) {
       setStep('choice')
@@ -79,14 +116,12 @@ export default function ContactModal({
     return () => { document.body.style.overflow = '' }
   }, [open])
 
-  // Focus first input when entering form step
   useEffect(() => {
     if (step === 'form' && open) {
       setTimeout(() => firstInputRef.current?.focus(), 100)
     }
   }, [step, open])
 
-  // Close on Escape
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') handleClose() }
     window.addEventListener('keydown', onKey)
@@ -144,20 +179,44 @@ export default function ContactModal({
   const labelClass = 'block text-white/70 text-xs font-semibold font-inter mb-1.5 tracking-wide'
 
   const inputClass = (field: string) =>
-    `w-full bg-[#0D1B2A] border rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm font-inter focus:outline-none transition-all duration-200 ${
+    `w-full bg-white/[0.04] border rounded-xl px-4 py-3 text-white placeholder-white/25 text-sm font-inter focus:outline-none transition-all duration-300 ${
       errors[field]
-        ? 'border-red-400 focus:border-red-400'
-        : 'border-white/15 focus:border-[#C9A84C]'
+        ? 'border-red-400/60 focus:border-red-400'
+        : 'border-white/10 focus:border-[#C9A84C] focus:bg-white/[0.06]'
     }`
 
   const selectClass = (field: string) =>
-    `w-full bg-[#0D1B2A] border rounded-xl px-4 py-3 text-sm font-inter focus:outline-none transition-all duration-200 appearance-none cursor-pointer ${
-      form[field as keyof typeof form] ? 'text-white' : 'text-white/30'
+    `w-full bg-white/[0.04] border rounded-xl px-4 py-3 text-sm font-inter focus:outline-none transition-all duration-300 appearance-none cursor-pointer ${
+      form[field as keyof typeof form] ? 'text-white' : 'text-white/25'
     } ${
       errors[field]
-        ? 'border-red-400 focus:border-red-400'
-        : 'border-white/15 focus:border-[#C9A84C]'
+        ? 'border-red-400/60 focus:border-red-400'
+        : 'border-white/10 focus:border-[#C9A84C] focus:bg-white/[0.06]'
     }`
+
+  // Stagger animation for choice cards
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.08, delayChildren: 0.1 },
+    },
+    exit: {
+      opacity: 0,
+      transition: { staggerChildren: 0.04, staggerDirection: -1 },
+    },
+  }
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { type: 'spring', stiffness: 300, damping: 25 },
+    },
+    exit: { opacity: 0, y: -10, scale: 0.95, transition: { duration: 0.15 } },
+  }
 
   return (
     <>
@@ -185,160 +244,251 @@ export default function ContactModal({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
             className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4"
-            style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
+            style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(12px)' }}
             onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
           >
             <motion.div
-              initial={{ y: 60, opacity: 0, scale: 0.96 }}
+              initial={{ y: 80, opacity: 0, scale: 0.92 }}
               animate={{ y: 0, opacity: 1, scale: 1 }}
-              exit={{ y: 40, opacity: 0, scale: 0.96 }}
-              transition={{ type: 'spring', stiffness: 280, damping: 28 }}
-              className="w-full max-w-lg rounded-3xl overflow-hidden"
-              style={{ background: '#0D1B2A', boxShadow: '0 40px 100px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,168,76,0.2)' }}
+              exit={{ y: 60, opacity: 0, scale: 0.95 }}
+              transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+              className="relative w-full max-w-lg rounded-3xl overflow-hidden"
+              style={{
+                background: 'linear-gradient(165deg, #111827 0%, #0A0F1A 50%, #0D1117 100%)',
+                boxShadow: '0 0 0 1px rgba(201,168,76,0.15), 0 25px 80px -12px rgba(0,0,0,0.8), 0 0 60px -20px rgba(201,168,76,0.1)',
+              }}
               role="dialog"
               aria-modal="true"
               aria-label="Contact"
             >
+              {/* Decorative top glow */}
+              <div
+                className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px"
+                style={{ background: 'linear-gradient(90deg, transparent, #C9A84C, transparent)' }}
+              />
+              <div
+                className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-24 pointer-events-none"
+                style={{ background: 'radial-gradient(ellipse at top, rgba(201,168,76,0.08) 0%, transparent 70%)' }}
+              />
+
               {/* Header */}
-              <div className="flex items-center justify-between px-6 py-5 border-b border-white/8">
-                <div>
-                  <h2 className="font-playfair font-bold text-white text-xl">
-                    {step === 'choice' ? 'Comment souhaitez-vous nous contacter ?' : 'Parlons de votre projet'}
-                  </h2>
-                  <p className="text-white/40 text-xs font-inter mt-0.5">
-                    {step === 'choice' ? 'Choisissez le moyen qui vous convient' : 'Réponse garantie sous 24h'}
-                  </p>
+              <div className="relative px-7 pt-7 pb-5">
+                <div className="flex items-start justify-between">
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.15, duration: 0.4 }}
+                  >
+                    <h2 className="font-playfair font-bold text-white text-xl leading-snug">
+                      {step === 'choice' ? (
+                        <>
+                          Comment souhaitez-vous
+                          <br />
+                          <span className="text-[#C9A84C]">nous contacter ?</span>
+                        </>
+                      ) : (
+                        'Parlons de votre projet'
+                      )}
+                    </h2>
+                    <p className="text-white/35 text-xs font-inter mt-2">
+                      {step === 'choice' ? 'Choisissez le moyen qui vous convient le mieux' : 'Réponse garantie sous 24h'}
+                    </p>
+                  </motion.div>
+                  <motion.button
+                    initial={{ opacity: 0, rotate: -90 }}
+                    animate={{ opacity: 1, rotate: 0 }}
+                    transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+                    onClick={handleClose}
+                    className="w-9 h-9 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] flex items-center justify-center text-white/40 hover:text-white transition-all duration-200"
+                    aria-label="Fermer la modale"
+                  >
+                    <X size={16} />
+                  </motion.button>
                 </div>
-                <button
-                  onClick={handleClose}
-                  className="w-9 h-9 rounded-xl bg-white/8 hover:bg-white/15 flex items-center justify-center text-white/60 hover:text-white transition-all"
-                  aria-label="Fermer la modale"
-                >
-                  <X size={18} />
-                </button>
               </div>
 
               {/* Body */}
-              <div className="px-6 py-5 max-h-[80vh] overflow-y-auto">
+              <div className="px-7 pb-7 max-h-[75vh] overflow-y-auto">
                 <AnimatePresence mode="wait">
 
                   {/* ── STEP 1: Choice ──────────────────────────── */}
                   {step === 'choice' && (
                     <motion.div
                       key="choice"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.2 }}
+                      variants={containerVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
                       className="space-y-3"
                     >
-                      {/* Formulaire */}
-                      <button
-                        onClick={() => goToForm()}
-                        className="w-full flex items-center gap-4 bg-white/[0.04] border border-white/10 hover:border-[#C9A84C]/40 rounded-xl p-5 text-left transition-all duration-200 group"
-                      >
-                        <div className="w-12 h-12 flex-shrink-0 rounded-xl bg-[#C9A84C]/10 border border-[#C9A84C]/20 flex items-center justify-center group-hover:bg-[#C9A84C]/20 transition-colors">
-                          <FileText size={20} className="text-[#C9A84C]" />
-                        </div>
-                        <div>
-                          <h3 className="font-inter font-semibold text-white text-sm">Remplir le formulaire</h3>
-                          <p className="text-white/40 font-inter text-xs mt-0.5">Recevez une réponse personnalisée sous 24h</p>
-                        </div>
-                      </button>
+                      {contactOptions.map((opt) => {
+                        const Icon = opt.icon
+                        const Wrapper = opt.href ? 'a' : 'button'
+                        const wrapperProps = opt.href
+                          ? { href: opt.href, target: '_blank' as const, rel: 'noopener noreferrer' }
+                          : { onClick: () => goToForm() }
 
-                      {/* WhatsApp */}
-                      <a
-                        href="https://wa.me/33756959078?text=Bonjour%2C%20je%20souhaite%20un%20devis%20pour%20mon%20projet%20digital."
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full flex items-center gap-4 bg-white/[0.04] border border-white/10 hover:border-[#25D366]/40 rounded-xl p-5 text-left transition-all duration-200 group"
-                      >
-                        <div className="w-12 h-12 flex-shrink-0 rounded-xl bg-[#25D366]/10 border border-[#25D366]/20 flex items-center justify-center group-hover:bg-[#25D366]/20 transition-colors">
-                          <MessageCircle size={20} className="text-[#25D366]" />
-                        </div>
-                        <div>
-                          <h3 className="font-inter font-semibold text-white text-sm">WhatsApp</h3>
-                          <p className="text-white/40 font-inter text-xs mt-0.5">Contactez Loubna directement, réponse dans la journée</p>
-                        </div>
-                      </a>
+                        return (
+                          <motion.div key={opt.id} variants={cardVariants}>
+                            <Wrapper
+                              {...(wrapperProps as React.AnchorHTMLAttributes<HTMLAnchorElement> & React.ButtonHTMLAttributes<HTMLButtonElement>)}
+                              className={`w-full flex items-center gap-4 bg-gradient-to-r ${opt.bgFrom} ${opt.bgTo} border border-white/[0.06] ${opt.borderHover} rounded-2xl p-5 text-left transition-all duration-300 group relative overflow-hidden`}
+                            >
+                              {/* Hover glow effect */}
+                              <div
+                                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                                style={{
+                                  background: `radial-gradient(circle at 30% 50%, ${opt.glowColor} 0%, transparent 60%)`,
+                                }}
+                              />
 
-                      {/* Téléphone */}
-                      <a
-                        href="tel:+33756959078"
-                        className="w-full flex items-center gap-4 bg-white/[0.04] border border-white/10 hover:border-white/20 rounded-xl p-5 text-left transition-all duration-200 group"
-                      >
-                        <div className="w-12 h-12 flex-shrink-0 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white/10 transition-colors">
-                          <Phone size={20} className="text-white/60" />
-                        </div>
-                        <div>
-                          <h3 className="font-inter font-semibold text-white text-sm">Appeler</h3>
-                          <p className="text-white/40 font-inter text-xs mt-0.5">07 56 95 90 78 — du lundi au vendredi, 9h-18h</p>
-                        </div>
-                      </a>
+                              {/* Icon */}
+                              <div
+                                className="relative w-12 h-12 flex-shrink-0 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+                                style={{
+                                  background: `linear-gradient(135deg, ${opt.color}15, ${opt.color}08)`,
+                                  border: `1px solid ${opt.color}25`,
+                                  boxShadow: `0 0 0 0 ${opt.color}00`,
+                                }}
+                              >
+                                <Icon size={20} style={{ color: opt.color }} />
+                              </div>
+
+                              {/* Text */}
+                              <div className="relative flex-1 min-w-0">
+                                <h3 className="font-inter font-semibold text-white text-sm group-hover:text-white transition-colors">
+                                  {opt.title}
+                                </h3>
+                                <p className="text-white/35 font-inter text-xs mt-0.5 group-hover:text-white/50 transition-colors">
+                                  {opt.desc}
+                                </p>
+                              </div>
+
+                              {/* Arrow indicator */}
+                              <div className="relative flex-shrink-0 w-8 h-8 rounded-lg bg-white/[0.04] group-hover:bg-white/[0.08] flex items-center justify-center transition-all duration-300 group-hover:translate-x-0.5">
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-white/30 group-hover:text-white/60 transition-colors">
+                                  <path d="M5.25 3.5L8.75 7L5.25 10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                              </div>
+                            </Wrapper>
+                          </motion.div>
+                        )
+                      })}
 
                       {/* Separator */}
-                      <div className="flex items-center gap-3 py-2">
-                        <div className="flex-1 h-px bg-white/8" />
-                        <span className="text-white/30 text-xs font-inter">ou</span>
-                        <div className="flex-1 h-px bg-white/8" />
-                      </div>
+                      <motion.div variants={cardVariants} className="flex items-center gap-4 py-1">
+                        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+                        <span className="text-white/20 text-[10px] font-inter uppercase tracking-widest">ou</span>
+                        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+                      </motion.div>
 
-                      {/* Audit gratuit */}
-                      <button
-                        onClick={() => goToForm('Je ne sais pas quel service me correspond. Je souhaite bénéficier d\'un audit gratuit de ma présence digitale pour identifier mes besoins.')}
-                        className="w-full flex items-center gap-4 bg-[#C9A84C]/5 border border-[#C9A84C]/20 hover:border-[#C9A84C]/50 rounded-xl p-5 text-left transition-all duration-200 group"
-                      >
-                        <div className="w-12 h-12 flex-shrink-0 rounded-xl bg-[#C9A84C]/15 border border-[#C9A84C]/30 flex items-center justify-center group-hover:bg-[#C9A84C]/25 transition-colors">
-                          <Search size={20} className="text-[#C9A84C]" />
-                        </div>
-                        <div>
-                          <h3 className="font-inter font-semibold text-[#C9A84C] text-sm">Je ne sais pas ce qu&apos;il me faut</h3>
-                          <p className="text-white/40 font-inter text-xs mt-0.5">Demandez un audit gratuit — on analyse votre situation et on vous conseille</p>
-                        </div>
-                      </button>
+                      {/* Audit gratuit — special card */}
+                      <motion.div variants={cardVariants}>
+                        <button
+                          onClick={() => goToForm('Je ne sais pas quel service me correspond. Je souhaite bénéficier d\'un audit gratuit de ma présence digitale pour identifier mes besoins.')}
+                          className="w-full relative overflow-hidden rounded-2xl p-5 text-left transition-all duration-300 group"
+                          style={{
+                            background: 'linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(201,168,76,0.02) 100%)',
+                            border: '1px solid rgba(201,168,76,0.15)',
+                          }}
+                        >
+                          {/* Animated shimmer effect */}
+                          <div
+                            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+                            style={{
+                              background: 'linear-gradient(105deg, transparent 40%, rgba(201,168,76,0.06) 50%, transparent 60%)',
+                              backgroundSize: '200% 100%',
+                              animation: 'shimmer 2s ease-in-out infinite',
+                            }}
+                          />
+
+                          <div className="relative flex items-center gap-4">
+                            <div
+                              className="w-12 h-12 flex-shrink-0 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+                              style={{
+                                background: 'linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.08))',
+                                border: '1px solid rgba(201,168,76,0.3)',
+                              }}
+                            >
+                              <Sparkles size={20} className="text-[#C9A84C]" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-inter font-semibold text-[#C9A84C] text-sm">
+                                Je ne sais pas ce qu&apos;il me faut
+                              </h3>
+                              <p className="text-white/35 font-inter text-xs mt-0.5 group-hover:text-white/50 transition-colors">
+                                Audit gratuit — on analyse et on vous conseille
+                              </p>
+                            </div>
+                            <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-[#C9A84C]/[0.08] group-hover:bg-[#C9A84C]/[0.15] flex items-center justify-center transition-all duration-300 group-hover:translate-x-0.5">
+                              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-[#C9A84C]/50 group-hover:text-[#C9A84C] transition-colors">
+                                <path d="M5.25 3.5L8.75 7L5.25 10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
+                            </div>
+                          </div>
+                        </button>
+                      </motion.div>
                     </motion.div>
                   )}
 
-                  {/* ── STEP 2: Form ────────────────────────────── */}
+                  {/* ── STEP 2: Success ────────────────────────────── */}
                   {step === 'form' && status === 'success' && (
                     <motion.div
                       key="success"
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="flex flex-col items-center justify-center py-12 text-center"
+                      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                      className="flex flex-col items-center justify-center py-14 text-center"
                     >
-                      <div className="w-16 h-16 rounded-full bg-green-500/15 border-2 border-green-500/40 flex items-center justify-center mb-5">
-                        <CheckCircle size={32} className="text-green-400" />
-                      </div>
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
+                        className="w-16 h-16 rounded-full flex items-center justify-center mb-5"
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.05))',
+                          border: '2px solid rgba(34,197,94,0.3)',
+                        }}
+                      >
+                        <CheckCircle size={30} className="text-green-400" />
+                      </motion.div>
                       <h3 className="font-playfair font-bold text-white text-xl mb-2">Demande envoyée !</h3>
-                      <p className="text-white/60 font-inter text-sm">
+                      <p className="text-white/50 font-inter text-sm">
                         On vous recontacte sous 24h.
                       </p>
-                      <button
+                      <motion.button
                         onClick={() => { handleClose(); setStatus('idle'); setStep('choice') }}
-                        className="mt-7 text-[#C9A84C] text-sm font-semibold font-inter hover:text-[#E4C46E] transition-colors"
+                        className="mt-8 text-[#C9A84C] text-sm font-semibold font-inter hover:text-[#E4C46E] transition-colors"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                       >
                         Fermer
-                      </button>
+                      </motion.button>
                     </motion.div>
                   )}
 
+                  {/* ── STEP 2: Form ────────────────────────────── */}
                   {step === 'form' && status !== 'success' && (
                     <motion.div
                       key="form"
-                      initial={{ opacity: 0, x: 20 }}
+                      initial={{ opacity: 0, x: 30 }}
                       animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 20 }}
-                      transition={{ duration: 0.2 }}
+                      exit={{ opacity: 0, x: 30 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 28 }}
                     >
                       {/* Back button */}
-                      <button
+                      <motion.button
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.2 }}
                         onClick={() => setStep('choice')}
-                        className="flex items-center gap-1.5 text-white/40 hover:text-[#C9A84C] text-xs font-inter mb-5 transition-colors"
+                        className="flex items-center gap-1.5 text-white/30 hover:text-[#C9A84C] text-xs font-inter mb-5 transition-colors duration-200 group"
                       >
-                        ← Retour aux options
-                      </button>
+                        <ArrowLeft size={12} className="group-hover:-translate-x-0.5 transition-transform" />
+                        Retour aux options
+                      </motion.button>
 
                       <form onSubmit={handleSubmit} noValidate className="space-y-4">
                         {/* Nom + Entreprise */}
@@ -423,7 +573,7 @@ export default function ContactModal({
                               className={selectClass('typeCommerce')}
                             >
                               {TYPE_COMMERCE.map((o) => (
-                                <option key={o.value} value={o.value} disabled={!o.value} className="bg-[#0D1B2A] text-white">
+                                <option key={o.value} value={o.value} disabled={!o.value} className="bg-[#111827] text-white">
                                   {o.label}
                                 </option>
                               ))}
@@ -441,7 +591,7 @@ export default function ContactModal({
                               className={selectClass('nbClients')}
                             >
                               {NB_CLIENTS.map((o) => (
-                                <option key={o.value} value={o.value} disabled={!o.value} className="bg-[#0D1B2A] text-white">
+                                <option key={o.value} value={o.value} disabled={!o.value} className="bg-[#111827] text-white">
                                   {o.label}
                                 </option>
                               ))}
@@ -462,7 +612,7 @@ export default function ContactModal({
                             onChange={handleChange}
                             rows={4}
                             className={`${inputClass('message')} resize-none`}
-                            style={{ color: '#ffffff', backgroundColor: '#0D1B2A', caretColor: '#C9A84C' }}
+                            style={{ caretColor: '#C9A84C' }}
                           />
                           {errors.message && <p className="text-red-400 text-[11px] mt-1 font-inter pl-1">{errors.message}</p>}
                         </div>
@@ -472,7 +622,7 @@ export default function ContactModal({
                           <motion.div
                             initial={{ opacity: 0, y: -5 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="flex items-start gap-2.5 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3"
+                            className="flex items-start gap-2.5 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3"
                           >
                             <AlertCircle size={16} className="text-red-400 flex-shrink-0 mt-0.5" />
                             <p className="text-red-300 text-xs font-inter leading-snug">
@@ -481,16 +631,23 @@ export default function ContactModal({
                           </motion.div>
                         )}
 
-                        <p className="text-gray-400 text-xs font-inter">
-                          * Champs obligatoires — Vos données sont confidentielles et ne seront jamais partagées.
+                        <p className="text-white/20 text-[11px] font-inter">
+                          * Champs obligatoires — Vos données restent confidentielles.
                         </p>
 
                         {/* Submit */}
                         <motion.button
                           type="submit"
                           disabled={status === 'loading'}
-                          className="w-full flex items-center justify-center gap-2 bg-[#C9A84C] hover:bg-[#E4C46E] disabled:opacity-60 disabled:cursor-not-allowed text-[#0A0A0A] py-4 rounded-xl font-bold text-sm font-inter transition-all duration-300 shadow-lg"
-                          whileHover={status !== 'loading' ? { scale: 1.01 } : {}}
+                          className="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-sm font-inter transition-all duration-300 relative overflow-hidden"
+                          style={{
+                            background: status === 'loading'
+                              ? 'rgba(201,168,76,0.4)'
+                              : 'linear-gradient(135deg, #C9A84C, #E4C46E)',
+                            color: '#0A0A0A',
+                            boxShadow: status === 'loading' ? 'none' : '0 8px 24px -4px rgba(201,168,76,0.3)',
+                          }}
+                          whileHover={status !== 'loading' ? { scale: 1.01, boxShadow: '0 12px 32px -4px rgba(201,168,76,0.4)' } : {}}
                           whileTap={status !== 'loading' ? { scale: 0.98 } : {}}
                         >
                           {status === 'loading' ? (
@@ -515,6 +672,14 @@ export default function ContactModal({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Shimmer keyframes */}
+      <style jsx global>{`
+        @keyframes shimmer {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+      `}</style>
     </>
   )
 }
