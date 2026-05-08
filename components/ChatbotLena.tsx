@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, Send, Minimize2 } from 'lucide-react'
 
 const WELCOME =
-  "Bonjour, je suis Lena, conseillere chez L-BOOST DigitalWeb. Vous avez un projet en tete, ou vous cherchez encore a definir ce dont vous avez besoin ?"
+  "Bonjour, je suis Léna, conseillère chez L-BOOST DigitalWeb. Vous avez un projet en tête, ou vous cherchez encore à définir ce dont vous avez besoin ?"
 
 const SUGGESTIONS = [
   "J'ai un commerce",
@@ -91,7 +91,7 @@ function LenaAvatar({ size = 36, online = true }: { size?: number; online?: bool
       <div className="rounded-full overflow-hidden border-2 border-white/50" style={{ width: size, height: size }}>
         <Image
           src={LENA_AVATAR}
-          alt="Lena — Conseillere L-BOOST"
+          alt="Léna — Conseillère L-BOOST"
           width={size}
           height={size}
           className="object-cover w-full h-full"
@@ -260,7 +260,7 @@ export default function ChatbotLena() {
       if ((err as Error).name === 'AbortError') return
       setTyping(false)
       setStreamingText('')
-      pushBot("Un souci technique de mon cote. N'hesitez pas a nous contacter directement sur WhatsApp au 07 56 95 90 78.")
+      pushBot("Un souci technique de mon côté. N'hésitez pas à nous contacter directement sur WhatsApp au 07 56 95 90 78.")
     }
   }
 
@@ -350,7 +350,7 @@ export default function ChatbotLena() {
                 animation: 'lenaPulse 3s ease-in-out infinite',
                 boxShadow: '0 0 20px rgba(201,168,76,0.3), 0 4px 16px rgba(0,0,0,0.5)',
               }}
-              aria-label="Parler a Lena, conseillere L-BOOST"
+              aria-label="Parler à Léna, conseillère L-BOOST"
             >
               <div className="relative w-[44px] h-[44px] rounded-full overflow-hidden flex-shrink-0">
                 <Image
@@ -371,7 +371,7 @@ export default function ChatbotLena() {
             <button
               onClick={handleOpen}
               className="desktop-only lena-trigger"
-              aria-label="Parler a Lena, conseillere L-BOOST"
+              aria-label="Parler à Léna, conseillère L-BOOST"
             >
               <div className="lena-avatar-wrapper">
                 <Image
@@ -385,7 +385,7 @@ export default function ChatbotLena() {
               </div>
               <div className="lena-trigger-text">
                 <div className="lena-trigger-name">Lena</div>
-                <div className="lena-trigger-subtitle">Conseillere L-BOOST · En ligne</div>
+                <div className="lena-trigger-subtitle">Conseillère L-BOOST · En ligne</div>
               </div>
             </button>
           </>
@@ -410,7 +410,7 @@ export default function ChatbotLena() {
               zIndex: 9999,
             }}
             role="dialog"
-            aria-label="Chat avec Lena, conseillere L-BOOST"
+            aria-label="Chat avec Léna, conseillère L-BOOST"
           >
             {/* Header */}
             <div className="lena-header">
@@ -422,7 +422,7 @@ export default function ChatbotLena() {
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                  <p className="text-white/80 text-[10px] font-inter">Conseillere digitale · En ligne</p>
+                  <p className="text-white/80 text-[10px] font-inter">Conseillère digitale · En ligne</p>
                 </div>
               </div>
               <button
@@ -438,7 +438,7 @@ export default function ChatbotLena() {
             <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3" style={{ background: '#F5F5F7' }}>
               {msgs.length === 0 && !welcomeShown && (
                 <div className="text-center text-[#9CA3AF] text-[11px] font-inter pt-8">
-                  Lena arrive dans quelques secondes...
+                  Léna arrive dans quelques secondes...
                 </div>
               )}
 
@@ -541,12 +541,12 @@ export default function ChatbotLena() {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input) }
                 }}
-                placeholder={typing ? 'Lena ecrit...' : 'Votre message...'}
+                placeholder={typing ? 'Léna écrit...' : 'Votre message...'}
                 disabled={typing}
                 className="flex-1 rounded-xl px-3.5 py-2.5 text-white text-xs font-inter focus:outline-none transition-colors disabled:opacity-50"
                 style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
                 maxLength={300}
-                aria-label="Message a Lena"
+                aria-label="Message à Léna"
               />
               <motion.button
                 onClick={() => sendMessage(input)}
