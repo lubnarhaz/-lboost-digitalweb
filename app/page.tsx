@@ -647,24 +647,32 @@ export default function HomePage() {
                 <AnimatedItem key={secteur.slug}>
                   <Link
                     href={`/secteurs/${secteur.slug}`}
-                    className="group relative bg-white/[0.02] border border-white/5 hover:border-[#C9A84C]/30 rounded-2xl p-7 transition-all duration-300 block h-full"
+                    className="group relative rounded-2xl overflow-hidden block h-full border border-white/5 hover:border-[#C9A84C]/30 transition-all duration-300"
                   >
-                    {/* Hover glow */}
-                    <div
-                      className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                      style={{ background: `radial-gradient(circle at 50% 0%, ${secteur.couleurAccent}08 0%, transparent 70%)` }}
-                    />
-
-                    <div className="relative z-10">
+                    {/* Photo */}
+                    <div className="relative h-52 overflow-hidden">
+                      <Image
+                        src={secteur.image}
+                        alt={secteur.nom}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-700"
+                        unoptimized
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/40 to-transparent" />
+                      {/* Icon badge */}
                       <div
-                        className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-colors duration-300"
+                        className="absolute top-4 left-4 w-10 h-10 rounded-lg flex items-center justify-center backdrop-blur-sm"
                         style={{
-                          background: `${secteur.couleurAccent}10`,
-                          border: `1px solid ${secteur.couleurAccent}20`,
+                          background: `${secteur.couleurAccent}20`,
+                          border: `1px solid ${secteur.couleurAccent}40`,
                         }}
                       >
-                        <Icon size={22} style={{ color: secteur.couleurAccent }} />
+                        <Icon size={18} style={{ color: secteur.couleurAccent }} />
                       </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="relative z-10 p-6 bg-[#0A0A0A]">
                       <h3 className="font-playfair font-bold text-white text-lg mb-2 group-hover:text-[#C9A84C] transition-colors">
                         {secteur.nom}
                       </h3>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useParams } from 'next/navigation'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { ArrowRight, Check, X, ChevronRight } from 'lucide-react'
 
@@ -43,17 +44,23 @@ export default function SecteurPage() {
           HERO
       ════════════════════════════════════════════════ */}
       <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1A1A2E] via-[#0A0A0A] to-[#0A0A0A]" />
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
+        {/* Background photo */}
+        <div className="absolute inset-0">
+          <Image
+            src={secteur.image}
+            alt={secteur.nom}
+            fill
+            className="object-cover"
+            priority
+            unoptimized
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A]/70 via-[#0A0A0A]/80 to-[#0A0A0A]" />
+        </div>
+
+        {/* Grain overlay */}
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
         }} />
-
-        {/* Glow */}
-        <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full blur-[120px] pointer-events-none"
-          style={{ background: `radial-gradient(circle, ${secteur.couleurAccent}15 0%, transparent 70%)` }}
-        />
 
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <AnimatedSection>
