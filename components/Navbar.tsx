@@ -1,12 +1,15 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
+import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, MessageCircle } from 'lucide-react'
+import { Menu, X, MessageCircle, ChevronDown } from 'lucide-react'
+import { SECTEURS } from '@/lib/secteurs-data'
 
 const navLinks = [
   { label: 'Services', href: '#services', isPage: false },
+  { label: 'Secteurs', href: '#secteurs', isPage: false, hasDropdown: true },
   { label: 'Packs', href: '#packs', isPage: false },
   { label: 'WalKin', href: '/walkin', isPage: true, badge: 'Nouveau' },
   { label: 'Blog', href: '/blog', isPage: true },
@@ -17,6 +20,9 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [secteursOpen, setSecteursOpen] = useState(false)
+  const [mobileSecteursOpen, setMobileSecteursOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
   const pathname = usePathname()
 
@@ -26,13 +32,24 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setSecteursOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
   const handleNavClick = (href: string, isPage?: boolean) => {
     setMenuOpen(false)
+    setSecteursOpen(false)
     if (isPage) {
       router.push(href)
       return
     }
-    // If not on homepage, navigate there first
     if (pathname !== '/') {
       router.push('/' + href)
       return
@@ -73,21 +90,65 @@ export default function Navbar() {
             </motion.a>
 
             {/* Desktop Nav */}
-            <nav className="hidden md:flex items-center gap-7" aria-label="Navigation principale">
+            <nav className="hidden md:flex items-center gap-6" aria-label="Navigation principale">
               {navLinks.map((link) => (
-                <button
-                  key={link.href}
-                  onClick={() => handleNavClick(link.href, link.isPage)}
-                  className="relative flex items-center gap-1.5 text-white/70 hover:text-[#C9A84C] text-sm font-medium tracking-wide transition-colors duration-200 group"
-                >
-                  {link.label}
-                  {link.badge && (
-                    <span className="bg-[#C9A84C] text-[#0A0A0A] text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide">
-                      {link.badge}
-                    </span>
-                  )}
-                  <span className="absolute -bottom-1 left-0 w-0 h-px bg-[#C9A84C] transition-all duration-300 group-hover:w-full" />
-                </button>
+                link.hasDropdown ? (
+                  <div key={link.href} className="relative" ref={dropdownRef}>
+                    <button
+                      onClick={() => setSecteursOpen(!secteursOpen)}
+                      onMouseEnter={() => setSecteursOpen(true)}
+                      className="relative flex items-center gap-1 text-white/70 hover:text-[#C9A84C] text-sm font-medium tracking-wide transition-colors duration-200 group"
+                    >
+                      {link.label}
+                      <ChevronDown size={14} className={`transition-transform duration-200 ${secteursOpen ? 'rotate-180' : ''}`} />
+                      <span className="absolute -bottom-1 left-0 w-0 h-px bg-[#C9A84C] transition-all duration-300 group-hover:w-full" />
+                    </button>
+
+                    <AnimatePresence>
+                      {secteursOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 8 }}
+                          transition={{ duration: 0.2 }}
+                          onMouseLeave={() => setSecteursOpen(false)}
+                          className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-64 bg-[#0A0A0A]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden"
+                        >
+                          {SECTEURS.map((secteur, i) => {
+                            const Icon = secteur.icon
+                            return (
+                              <Link
+                                key={secteur.slug}
+                                href={`/secteurs/${secteur.slug}`}
+                                onClick={() => setSecteursOpen(false)}
+                                className={`flex items-center gap-3 px-4 py-3 text-white/60 hover:text-[#C9A84C] hover:bg-white/5 transition-all duration-200 ${
+                                  i < SECTEURS.length - 1 ? 'border-b border-white/5' : ''
+                                }`}
+                              >
+                                <Icon size={16} style={{ color: secteur.couleurAccent }} />
+                                <span className="text-sm font-inter">{secteur.nom}</span>
+                              </Link>
+                            )
+                          })}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ) : (
+                  <button
+                    key={link.href}
+                    onClick={() => handleNavClick(link.href, link.isPage)}
+                    className="relative flex items-center gap-1.5 text-white/70 hover:text-[#C9A84C] text-sm font-medium tracking-wide transition-colors duration-200 group"
+                  >
+                    {link.label}
+                    {link.badge && (
+                      <span className="bg-[#C9A84C] text-[#0A0A0A] text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide">
+                        {link.badge}
+                      </span>
+                    )}
+                    <span className="absolute -bottom-1 left-0 w-0 h-px bg-[#C9A84C] transition-all duration-300 group-hover:w-full" />
+                  </button>
+                )
               ))}
             </nav>
 
@@ -138,25 +199,68 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 bg-[#0A0A0A]/98 backdrop-blur-xl flex flex-col pt-24 pb-8 px-6"
+            className="fixed inset-0 z-40 bg-[#0A0A0A]/98 backdrop-blur-xl flex flex-col pt-24 pb-8 px-6 overflow-y-auto"
           >
-            <nav className="flex flex-col gap-6" aria-label="Navigation mobile">
+            <nav className="flex flex-col gap-4" aria-label="Navigation mobile">
               {navLinks.map((link, i) => (
-                <motion.button
-                  key={link.href}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.07 }}
-                  onClick={() => handleNavClick(link.href, link.isPage)}
-                  className="text-left flex items-center gap-3 text-white/80 hover:text-[#C9A84C] text-2xl font-playfair font-medium border-b border-white/10 pb-5 transition-colors"
-                >
-                  {link.label}
-                  {link.badge && (
-                    <span className="bg-[#C9A84C] text-[#0A0A0A] text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">
-                      {link.badge}
-                    </span>
-                  )}
-                </motion.button>
+                link.hasDropdown ? (
+                  <div key={link.href}>
+                    <motion.button
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.07 }}
+                      onClick={() => setMobileSecteursOpen(!mobileSecteursOpen)}
+                      className="w-full text-left flex items-center justify-between text-white/80 hover:text-[#C9A84C] text-2xl font-playfair font-medium border-b border-white/10 pb-4 transition-colors"
+                    >
+                      {link.label}
+                      <ChevronDown size={20} className={`transition-transform duration-200 ${mobileSecteursOpen ? 'rotate-180' : ''}`} />
+                    </motion.button>
+                    <AnimatePresence>
+                      {mobileSecteursOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="pl-4 pt-2 pb-3 space-y-2">
+                            {SECTEURS.map((secteur) => {
+                              const Icon = secteur.icon
+                              return (
+                                <Link
+                                  key={secteur.slug}
+                                  href={`/secteurs/${secteur.slug}`}
+                                  onClick={() => setMenuOpen(false)}
+                                  className="flex items-center gap-3 py-2 text-white/50 hover:text-[#C9A84C] transition-colors"
+                                >
+                                  <Icon size={16} style={{ color: secteur.couleurAccent }} />
+                                  <span className="text-base font-inter">{secteur.nom}</span>
+                                </Link>
+                              )
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ) : (
+                  <motion.button
+                    key={link.href}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.07 }}
+                    onClick={() => handleNavClick(link.href, link.isPage)}
+                    className="text-left flex items-center gap-3 text-white/80 hover:text-[#C9A84C] text-2xl font-playfair font-medium border-b border-white/10 pb-4 transition-colors"
+                  >
+                    {link.label}
+                    {link.badge && (
+                      <span className="bg-[#C9A84C] text-[#0A0A0A] text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">
+                        {link.badge}
+                      </span>
+                    )}
+                  </motion.button>
+                )
               ))}
             </nav>
             <motion.a

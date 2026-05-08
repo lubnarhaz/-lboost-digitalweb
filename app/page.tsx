@@ -32,7 +32,7 @@ import CountUpNumber from '@/components/CountUpNumber'
 import WalletMockup from '@/components/WalletMockup'
 import Footer from '@/components/Footer'
 import AnimatedSection, { AnimatedItem } from '@/components/AnimatedSection'
-import PortfolioStrip from '@/components/PortfolioStrip'
+import { SECTEURS } from '@/lib/secteurs-data'
 
 // ── Typewriter ────────────────────────────────────────────────────────────────
 const TYPEWRITER_ITEMS = [
@@ -623,9 +623,66 @@ export default function HomePage() {
       </section>
 
       {/* ════════════════════════════════════════════════
-          SECTION 3.5 — PORTFOLIO STRIP
+          SECTION 3.5 — NOS SECTEURS D'INTERVENTION
       ════════════════════════════════════════════════ */}
-      <PortfolioStrip />
+      <section className="bg-[#0A0A0A] py-20 md:py-28">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AnimatedSection className="text-center mb-14">
+            <div className="section-divider" />
+            <h2
+              className="font-playfair font-bold text-white mb-4"
+              style={{ fontSize: 'clamp(28px, 4vw, 48px)' }}
+            >
+              Nos secteurs d&apos;intervention
+            </h2>
+            <p className="text-white/50 text-lg font-inter max-w-xl mx-auto">
+              Des solutions digitales adaptées à chaque métier.
+            </p>
+          </AnimatedSection>
+
+          <AnimatedSection stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {SECTEURS.map((secteur) => {
+              const Icon = secteur.icon
+              return (
+                <AnimatedItem key={secteur.slug}>
+                  <Link
+                    href={`/secteurs/${secteur.slug}`}
+                    className="group relative bg-white/[0.02] border border-white/5 hover:border-[#C9A84C]/30 rounded-2xl p-7 transition-all duration-300 block h-full"
+                  >
+                    {/* Hover glow */}
+                    <div
+                      className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                      style={{ background: `radial-gradient(circle at 50% 0%, ${secteur.couleurAccent}08 0%, transparent 70%)` }}
+                    />
+
+                    <div className="relative z-10">
+                      <div
+                        className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-colors duration-300"
+                        style={{
+                          background: `${secteur.couleurAccent}10`,
+                          border: `1px solid ${secteur.couleurAccent}20`,
+                        }}
+                      >
+                        <Icon size={22} style={{ color: secteur.couleurAccent }} />
+                      </div>
+                      <h3 className="font-playfair font-bold text-white text-lg mb-2 group-hover:text-[#C9A84C] transition-colors">
+                        {secteur.nom}
+                      </h3>
+                      <p className="text-white/40 font-inter text-sm leading-relaxed mb-4">
+                        {secteur.hero.sousTitre}
+                      </p>
+                      <span className="inline-flex items-center gap-1 text-[#C9A84C] text-sm font-semibold font-inter group-hover:gap-2 transition-all">
+                        Découvrir
+                        <motion.span className="inline-block" whileHover={{ x: 4 }}>→</motion.span>
+                      </span>
+                    </div>
+                  </Link>
+                </AnimatedItem>
+              )
+            })}
+          </AnimatedSection>
+        </div>
+      </section>
 
       {/* ════════════════════════════════════════════════
           SECTION 4 — PACKS

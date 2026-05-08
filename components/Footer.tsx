@@ -1,9 +1,11 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { MessageCircle, Instagram, Facebook, Linkedin, ArrowUpRight } from 'lucide-react'
+import { SECTEURS } from '@/lib/secteurs-data'
 
 const footerLinks = {
   services: [
@@ -45,7 +47,7 @@ export default function Footer() {
   return (
     <footer className="bg-[#0A0A0A] border-t border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="mb-5">
@@ -107,6 +109,25 @@ export default function Footer() {
                   >
                     {link.label}
                   </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Secteurs */}
+          <div>
+            <h4 className="text-white font-semibold text-sm tracking-wider uppercase mb-5 font-inter">
+              Secteurs
+            </h4>
+            <ul className="space-y-3">
+              {SECTEURS.map((secteur) => (
+                <li key={secteur.slug}>
+                  <Link
+                    href={`/secteurs/${secteur.slug}`}
+                    className="text-white/40 hover:text-[#C9A84C] text-sm font-inter transition-colors duration-200"
+                  >
+                    {secteur.nom}
+                  </Link>
                 </li>
               ))}
             </ul>
