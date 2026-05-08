@@ -19,7 +19,9 @@ const footerLinks = {
     { label: 'Témoignages', href: '#temoignages' },
     { label: 'FAQ', href: '#faq' },
     { label: '★ Carte Fidélité WalKin', href: '/walkin', isPage: true },
-    { label: 'Mentions légales', href: '#' },
+    { label: 'Mentions légales', href: '/mentions-legales', isPage: true },
+    { label: 'Confidentialité', href: '/politique-de-confidentialite', isPage: true },
+    { label: 'CGV', href: '/cgv', isPage: true },
   ],
 }
 
