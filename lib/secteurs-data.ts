@@ -71,6 +71,7 @@ export interface Secteur {
   emoji: string
   couleurAccent: string
   image: string
+  douleurImage: string
   hero: {
     titre: string
     sousTitre: string
@@ -93,6 +94,7 @@ export const SECTEURS: Secteur[] = [
     emoji: '💇',
     couleurAccent: '#E8A0BF',
     image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&h=500&fit=crop',
+    douleurImage: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=700&h=470&fit=crop',
     hero: {
       titre: 'Salon de beauté, spa, institut',
       sousTitre: 'Attirez plus de clientes et fidélisez-les avec une présence digitale premium',
@@ -145,6 +147,7 @@ export const SECTEURS: Secteur[] = [
     emoji: '🍽️',
     couleurAccent: '#F59E0B',
     image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=500&fit=crop',
+    douleurImage: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=700&h=470&fit=crop',
     hero: {
       titre: 'Restaurant, brasserie, fast-food',
       sousTitre: 'Remplissez vos tables et fidélisez vos clients sans dépendre des plateformes',
@@ -197,6 +200,7 @@ export const SECTEURS: Secteur[] = [
     emoji: '🏠',
     couleurAccent: '#3B82F6',
     image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=500&fit=crop',
+    douleurImage: 'https://images.unsplash.com/photo-1554774853-aae0a22c8aa4?w=700&h=470&fit=crop',
     hero: {
       titre: 'Agence immobilière, promoteur, mandataire',
       sousTitre: 'Générez des leads qualifiés et démarquez-vous dans un marché ultra-concurrentiel',
@@ -248,7 +252,8 @@ export const SECTEURS: Secteur[] = [
     icon: Store,
     emoji: '🏪',
     couleurAccent: '#10B981',
-    image: 'https://images.unsplash.com/photo-1556740758-90de940da7ca?w=800&h=500&fit=crop',
+    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=500&fit=crop',
+    douleurImage: 'https://images.unsplash.com/photo-1556741533-6e6a62bd8b49?w=700&h=470&fit=crop',
     hero: {
       titre: 'Artisan, commerçant, profession libérale',
       sousTitre: 'Devenez visible dans votre ville et attirez des clients qui vous cherchent déjà',
@@ -301,6 +306,7 @@ export const SECTEURS: Secteur[] = [
     emoji: '🎯',
     couleurAccent: '#8B5CF6',
     image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=500&fit=crop',
+    douleurImage: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=700&h=470&fit=crop',
     hero: {
       titre: 'Coach, consultant, formateur',
       sousTitre: 'Positionnez-vous comme l\'expert de votre domaine et attirez des clients premium',
@@ -353,6 +359,7 @@ export const SECTEURS: Secteur[] = [
     emoji: '🛒',
     couleurAccent: '#EF4444',
     image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=500&fit=crop',
+    douleurImage: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=700&h=470&fit=crop',
     hero: {
       titre: 'Boutique en ligne, marketplace, DNVB',
       sousTitre: 'Augmentez vos ventes et fidélisez vos acheteurs avec une stratégie digitale complète',
