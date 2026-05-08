@@ -72,6 +72,7 @@ export interface Secteur {
   couleurAccent: string
   image: string
   douleurImage: string
+  heroNote?: string
   hero: {
     titre: string
     sousTitre: string
@@ -360,8 +361,9 @@ export const SECTEURS: Secteur[] = [
     couleurAccent: '#EF4444',
     image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=500&fit=crop',
     douleurImage: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=700&h=470&fit=crop',
+    heroNote: '(Ce qu\u2019on appelle une DNVB \u2014 une marque digitale qui vend sans interm\u00e9diaire, directement \u00e0 ses clients. Si c\u2019est votre cas, vous \u00eates exactement au bon endroit.)',
     hero: {
-      titre: 'Boutique en ligne, marketplace, DNVB',
+      titre: 'Vous vendez en ligne \u2014 sur votre propre boutique, sur des marketplaces, ou en tant que marque qui vend directement \u00e0 ses clients',
       sousTitre: 'Augmentez vos ventes et fidélisez vos acheteurs avec une stratégie digitale complète',
       description: 'Avoir une boutique en ligne ne suffit plus. Sans stratégie d\'acquisition, de conversion et de fidélisation, vous laissez de l\'argent sur la table chaque jour.',
     },

@@ -21,10 +21,10 @@ export default function SecteurPage() {
 
   if (!secteur) {
     return (
-      <main className="min-h-screen bg-white flex items-center justify-center">
+      <main className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
         <Navbar />
         <div className="text-center pt-32">
-          <h1 className="font-playfair text-3xl text-[#0A0A0A] mb-4">Secteur introuvable</h1>
+          <h1 className="font-playfair text-3xl text-white mb-4">Secteur introuvable</h1>
           <Link href="/" className="text-[#C9A84C] hover:underline font-inter">
             Retour à l&apos;accueil
           </Link>
@@ -35,11 +35,11 @@ export default function SecteurPage() {
   }
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-[#0A0A0A]">
       <Navbar />
 
       {/* ════════════════════════════════════════════════
-          HERO — fond photo sombre (contraste premium)
+          SECTION 1 — HERO (fond sombre + photo)
       ════════════════════════════════════════════════ */}
       <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
         <div className="absolute inset-0">
@@ -71,10 +71,27 @@ export default function SecteurPage() {
             >
               {secteur.hero.titre}
             </h1>
-            <p className="text-lg md:text-xl font-inter mb-6 max-w-2xl mx-auto" style={{ color: secteur.couleurAccent }}>
+
+            {/* Note DNVB (e-commerce uniquement) */}
+            {secteur.heroNote && (
+              <p style={{
+                fontSize: '13px',
+                color: '#6B7280',
+                fontStyle: 'italic',
+                marginTop: '8px',
+                marginBottom: '16px',
+                fontFamily: 'Inter',
+              }}
+                className="max-w-2xl mx-auto"
+              >
+                {secteur.heroNote}
+              </p>
+            )}
+
+            <p className="text-lg md:text-xl font-inter mb-6 max-w-2xl mx-auto text-[#C9A84C]">
               {secteur.hero.sousTitre}
             </p>
-            <p className="text-white/60 font-inter max-w-xl mx-auto leading-relaxed">
+            <p className="text-[#9CA3AF] font-inter max-w-xl mx-auto leading-relaxed">
               {secteur.hero.description}
             </p>
           </AnimatedSection>
@@ -82,9 +99,9 @@ export default function SecteurPage() {
       </section>
 
       {/* ════════════════════════════════════════════════
-          DOULEURS — fond blanc + photo réaction humaine
+          SECTION 2 — DOULEURS (fond clair #F8F7F4)
       ════════════════════════════════════════════════ */}
-      <section className="bg-white py-20 md:py-28">
+      <section className="bg-[#F8F7F4] py-20 md:py-28">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection className="text-center mb-14">
             <div className="w-12 h-px bg-[#C9A84C] mx-auto mb-6" />
@@ -94,7 +111,7 @@ export default function SecteurPage() {
             >
               Vous vous reconnaissez ?
             </h2>
-            <p className="text-[#6B6B6B] font-inter max-w-lg mx-auto">
+            <p className="text-[#4B5563] font-inter max-w-lg mx-auto">
               Ces problèmes sont courants dans votre secteur. La bonne nouvelle : ils ont tous une solution.
             </p>
           </AnimatedSection>
@@ -119,9 +136,9 @@ export default function SecteurPage() {
             <AnimatedSection stagger className="space-y-4">
               {secteur.douleurs.map((douleur) => (
                 <AnimatedItem key={douleur.titre}>
-                  <div className="bg-[#F8F7F4] border border-[#E8E6E1] hover:border-red-300/50 rounded-xl p-5 transition-all duration-300 group">
+                  <div className="bg-white border border-[#E5E7EB] hover:border-[#C9A84C] rounded-xl p-5 transition-all duration-300 group hover:shadow-[0_4px_20px_-4px_rgba(201,168,76,0.15)]">
                     <h3 className="font-inter font-semibold text-[#0A0A0A] text-base mb-1">{douleur.titre}</h3>
-                    <p className="text-[#6B6B6B] font-inter text-sm leading-relaxed">{douleur.description}</p>
+                    <p className="text-[#4B5563] font-inter text-sm leading-relaxed">{douleur.description}</p>
                   </div>
                 </AnimatedItem>
               ))}
@@ -131,19 +148,19 @@ export default function SecteurPage() {
       </section>
 
       {/* ════════════════════════════════════════════════
-          AVANT / APRÈS — fond gris clair
+          SECTION 3 — AVANT / APRÈS (fond sombre)
       ════════════════════════════════════════════════ */}
-      <section className="bg-[#F8F7F4] py-20 md:py-28">
+      <section className="bg-[#0A0A0A] py-20 md:py-28">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection className="text-center mb-14">
             <div className="w-12 h-px bg-[#C9A84C] mx-auto mb-6" />
             <h2
-              className="font-playfair font-bold text-[#0A0A0A] mb-4"
+              className="font-playfair font-bold text-white mb-4"
               style={{ fontSize: 'clamp(24px, 3.5vw, 40px)' }}
             >
               Avant / Après L-BOOST
             </h2>
-            <p className="text-[#6B6B6B] font-inter max-w-lg mx-auto">
+            <p className="text-[#9CA3AF] font-inter max-w-lg mx-auto">
               La transformation concrète que nous apportons à votre activité.
             </p>
           </AnimatedSection>
@@ -151,11 +168,14 @@ export default function SecteurPage() {
           <div className="space-y-4">
             {secteur.avantApres.map((item, i) => (
               <AnimatedSection key={i} delay={i * 0.08}>
-                <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-3 md:gap-6 items-center bg-white border border-[#E8E6E1] rounded-xl p-4 md:p-5 hover:shadow-md transition-all duration-300">
+                <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-3 md:gap-4 items-center">
                   {/* Avant */}
-                  <div className="flex items-center gap-3">
-                    <X size={16} className="text-red-400 flex-shrink-0" />
-                    <span className="text-[#999] font-inter text-sm line-through decoration-red-300/50">{item.avant}</span>
+                  <div
+                    className="flex items-center gap-3 rounded-xl p-4 transition-all duration-300"
+                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                  >
+                    <X size={16} className="text-[#6B7280] flex-shrink-0" />
+                    <span className="text-[#9CA3AF] font-inter text-sm line-through decoration-[#6B7280]/40">{item.avant}</span>
                   </div>
 
                   {/* Arrow */}
@@ -167,9 +187,12 @@ export default function SecteurPage() {
                   </div>
 
                   {/* Après */}
-                  <div className="flex items-center gap-3">
-                    <Check size={16} className="text-green-500 flex-shrink-0" />
-                    <span className="text-[#0A0A0A] font-inter text-sm font-medium">{item.apres}</span>
+                  <div
+                    className="flex items-center gap-3 rounded-xl p-4 transition-all duration-300"
+                    style={{ background: 'rgba(201,168,76,0.05)', border: '1px solid rgba(201,168,76,0.3)' }}
+                  >
+                    <Check size={16} className="text-[#C9A84C] flex-shrink-0" />
+                    <span className="text-white font-inter text-sm font-medium">{item.apres}</span>
                   </div>
                 </div>
               </AnimatedSection>
@@ -179,7 +202,7 @@ export default function SecteurPage() {
       </section>
 
       {/* ════════════════════════════════════════════════
-          FOMO — reste sombre pour contraste
+          SECTION 4 — FOMO (fond sombre)
       ════════════════════════════════════════════════ */}
       <SectionFOMO
         {...secteur.fomo}
@@ -187,19 +210,19 @@ export default function SecteurPage() {
       />
 
       {/* ════════════════════════════════════════════════
-          CE QUE NOUS FAISONS POUR VOUS — fond blanc
+          SECTION 5 — CE QUE NOUS FAISONS (fond sombre)
       ════════════════════════════════════════════════ */}
-      <section className="bg-white py-20 md:py-28">
+      <section className="bg-[#0A0A0A] py-20 md:py-28">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection className="text-center mb-14">
             <div className="w-12 h-px bg-[#C9A84C] mx-auto mb-6" />
             <h2
-              className="font-playfair font-bold text-[#0A0A0A] mb-4"
+              className="font-playfair font-bold text-white mb-4"
               style={{ fontSize: 'clamp(24px, 3.5vw, 40px)' }}
             >
               Ce que nous mettons en place pour vous
             </h2>
-            <p className="text-[#6B6B6B] font-inter max-w-lg mx-auto">
+            <p className="text-[#9CA3AF] font-inter max-w-lg mx-auto">
               7 actions concrètes pour transformer votre présence digitale.
             </p>
           </AnimatedSection>
@@ -207,17 +230,19 @@ export default function SecteurPage() {
           <div className="space-y-4">
             {secteur.actions.map((action, i) => (
               <AnimatedSection key={action.numero} delay={i * 0.06}>
-                <div className="flex items-start gap-5 bg-[#F8F7F4] border border-[#E8E6E1] hover:border-[#C9A84C]/40 rounded-xl p-5 md:p-6 transition-all duration-300 group hover:shadow-sm">
+                <div className="flex items-start gap-5 rounded-xl p-5 md:p-6 transition-all duration-300 group hover:shadow-sm"
+                  style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+                >
                   <div
                     className="w-10 h-10 flex-shrink-0 rounded-lg flex items-center justify-center font-playfair font-bold text-sm bg-[#C9A84C] text-white"
                   >
                     {action.numero}
                   </div>
                   <div>
-                    <h3 className="font-inter font-semibold text-[#0A0A0A] text-base mb-1 group-hover:text-[#C9A84C] transition-colors">
+                    <h3 className="font-inter font-semibold text-white text-base mb-1 group-hover:text-[#C9A84C] transition-colors">
                       {action.titre}
                     </h3>
-                    <p className="text-[#6B6B6B] font-inter text-sm leading-relaxed">{action.description}</p>
+                    <p className="text-[#9CA3AF] font-inter text-sm leading-relaxed">{action.description}</p>
                   </div>
                 </div>
               </AnimatedSection>
@@ -227,7 +252,7 @@ export default function SecteurPage() {
       </section>
 
       {/* ════════════════════════════════════════════════
-          BÉNÉFICES — fond gris clair
+          SECTION 6 — BÉNÉFICES (fond clair #F8F7F4)
       ════════════════════════════════════════════════ */}
       <section className="bg-[#F8F7F4] py-20 md:py-28">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -246,7 +271,7 @@ export default function SecteurPage() {
               const BeneficeIcon = benefice.icon
               return (
                 <AnimatedItem key={benefice.titre}>
-                  <div className="bg-white border border-[#E8E6E1] hover:border-[#C9A84C]/40 rounded-2xl p-6 text-center transition-all duration-300 group h-full hover:shadow-md">
+                  <div className="bg-white border border-[#E5E7EB] hover:border-[#C9A84C] rounded-2xl p-6 text-center transition-all duration-300 group h-full hover:shadow-[0_4px_20px_-4px_rgba(201,168,76,0.15)]">
                     <div className="w-12 h-12 mx-auto mb-4 rounded-xl flex items-center justify-center bg-[#C9A84C]/10 border border-[#C9A84C]/20">
                       <BeneficeIcon size={22} className="text-[#C9A84C]" />
                     </div>
@@ -261,12 +286,12 @@ export default function SecteurPage() {
       </section>
 
       {/* ════════════════════════════════════════════════
-          AUTRES SECTEURS — fond blanc
+          SECTION 7 — AUTRES SECTEURS (fond sombre)
       ════════════════════════════════════════════════ */}
-      <section className="bg-white py-16 md:py-20 border-t border-[#E8E6E1]">
+      <section className="bg-[#0A0A0A] py-16 md:py-20 border-t border-white/10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection className="text-center mb-10">
-            <h3 className="font-playfair font-bold text-[#0A0A0A] text-xl md:text-2xl">
+            <h3 className="font-playfair font-bold text-white text-xl md:text-2xl">
               Nous accompagnons aussi
             </h3>
           </AnimatedSection>
@@ -275,7 +300,8 @@ export default function SecteurPage() {
               <Link
                 key={s.slug}
                 href={`/secteurs/${s.slug}`}
-                className="flex items-center gap-2 bg-[#F8F7F4] border border-[#E8E6E1] hover:border-[#C9A84C]/40 px-4 py-2.5 rounded-xl text-[#6B6B6B] hover:text-[#C9A84C] text-sm font-inter transition-all duration-200 hover:shadow-sm"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white/60 hover:text-[#C9A84C] text-sm font-inter transition-all duration-200"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }}
               >
                 {s.nom}
               </Link>
@@ -285,7 +311,7 @@ export default function SecteurPage() {
       </section>
 
       {/* ════════════════════════════════════════════════
-          CTA CONTACT — sombre pour contraste final
+          SECTION 8 — CTA CONTACT (fond sombre)
       ════════════════════════════════════════════════ */}
       <CTAContact
         context={secteur.slug as WhatsAppContext}
