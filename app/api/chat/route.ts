@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server'
+import { extractAndForwardLead } from '@/lib/lead'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
-const SITE_URL = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : 'http://localhost:3000'
 
 const SYSTEM_PROMPT = `# SYSTÈME — LÉNA, CONSEILLÈRE COMMERCIALE L-BOOST DIGITALWEB
 
@@ -174,27 +172,6 @@ Site : lboost-digitalweb.fr
 Formulaire audit : lboost-digitalweb.fr/#contact
 Email : contact@lboost-digitalweb.fr`
 
-// ── Parse LEAD_DATA from Claude's response ────────────────────────────────────
-async function processLeadData(text: string, baseUrl: string): Promise<string> {
-  const leadMatch = text.match(/<LEAD_DATA>([\s\S]*?)<\/LEAD_DATA>/)
-  if (!leadMatch) return text
-
-  try {
-    const leadData = JSON.parse(leadMatch[1])
-    // Fire-and-forget — don't block the response
-    fetch(`${baseUrl}/api/lead`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(leadData),
-    }).catch((e) => console.error('Lead forward error:', e))
-  } catch (e) {
-    console.error('Lead parsing error:', e)
-  }
-
-  // Strip LEAD_DATA block from visible response
-  return text.replace(/<LEAD_DATA>[\s\S]*?<\/LEAD_DATA>/g, '').trim()
-}
-
 export async function POST(req: Request) {
   if (!ANTHROPIC_API_KEY) {
     return NextResponse.json({ error: 'API key missing' }, { status: 500 })
@@ -229,6 +206,8 @@ export async function POST(req: Request) {
     if (wantStream) {
       const encoder = new TextEncoder()
       let fullResponse = ''
+      // Promise to track lead processing — must complete before stream ends
+      let leadPromise: Promise<void> | null = null
 
       const readable = new ReadableStream({
         async start(controller) {
@@ -264,7 +243,6 @@ export async function POST(req: Request) {
                       leadBuffer += chunk
                       if (leadBuffer.includes('</LEAD_DATA>')) {
                         insideLeadBlock = false
-                        // Send any text after closing tag
                         const afterTag = leadBuffer.split('</LEAD_DATA>').pop() || ''
                         if (afterTag.trim()) {
                           controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: afterTag })}\n\n`))
@@ -274,8 +252,7 @@ export async function POST(req: Request) {
                       continue
                     }
 
-                    // Check if this chunk starts a LEAD_DATA block
-                    if (chunk.includes('<LEAD_')) {
+                    if (chunk.includes('<LEAD_') || chunk.includes('<L')) {
                       insideLeadBlock = true
                       leadBuffer = chunk
                       continue
@@ -294,9 +271,15 @@ export async function POST(req: Request) {
           } catch (e) {
             console.error('Stream read error:', e)
           } finally {
-            // Process lead data from full response
+            // Process lead data DIRECTLY (not via HTTP) — await it!
             if (fullResponse.includes('<LEAD_DATA>')) {
-              processLeadData(fullResponse, SITE_URL)
+              leadPromise = extractAndForwardLead(fullResponse).then(() => {
+                console.log('[Chat] Lead processed after stream')
+              }).catch((e) => {
+                console.error('[Chat] Lead processing error:', e)
+              })
+              // Wait for lead to be sent before closing
+              await leadPromise
             }
             controller.enqueue(encoder.encode('data: [DONE]\n\n'))
             controller.close()
@@ -317,8 +300,8 @@ export async function POST(req: Request) {
     const data = await res.json()
     let reply = data.content?.[0]?.text || ''
 
-    // Process lead data and strip from response
-    reply = await processLeadData(reply, SITE_URL)
+    // Process lead data DIRECTLY and strip from response
+    reply = await extractAndForwardLead(reply)
 
     return NextResponse.json({ reply })
   } catch (e) {
