@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, Send, Loader2, CheckCircle, AlertCircle, MessageCircle } from 'lucide-react'
 
 const GOOGLE_SCRIPT_URL =
-  'https://script.google.com/macros/s/AKfycbzg5kLK04NeTW6DmxrdLpmF_ZgpTzOAMmOvxXtImRJ0l_4_5ymKkdawLcyKY0EvkZTJ/exec'
+  'https://script.google.com/macros/s/AKfycbwkYtvO_-65toBky_2Kqoz3MQA2UKsAXoTZUKBJW6_FKLBDBk8Wpf8r6CVrVHFqDcge/exec'
 
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
@@ -126,7 +126,7 @@ export default function ContactModal({
   const labelClass = 'block text-white/70 text-xs font-semibold font-inter mb-1.5 tracking-wide'
 
   const inputClass = (field: string) =>
-    `w-full bg-white/8 border rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm font-inter focus:outline-none transition-all duration-200 ${
+    `w-full bg-[#0D1B2A] border rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm font-inter focus:outline-none transition-all duration-200 ${
       errors[field]
         ? 'border-red-400 focus:border-red-400'
         : 'border-white/15 focus:border-[#7C3AED]'
@@ -343,6 +343,7 @@ export default function ContactModal({
                         onChange={handleChange}
                         rows={4}
                         className={`${inputClass('message')} resize-none`}
+                        style={{ color: '#ffffff', backgroundColor: '#0D1B2A', caretColor: '#C9A84C' }}
                       />
                       {errors.message && <p className="text-red-400 text-[11px] mt-1 font-inter pl-1">{errors.message}</p>}
                     </div>
