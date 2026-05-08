@@ -1001,7 +1001,7 @@ export default function HomePage() {
       {/* ════════════════════════════════════════════════
           SECTION 9 — CTA FINAL (FUTURISTIC)
       ════════════════════════════════════════════════ */}
-      <section className="bg-[#0A0A0A] py-24 md:py-36 relative overflow-hidden">
+      <section id="contact" className="bg-[#0A0A0A] py-24 md:py-36 relative overflow-hidden">
         {/* Animated grid background */}
         <div className="absolute inset-0 grid-bg pointer-events-none" />
 

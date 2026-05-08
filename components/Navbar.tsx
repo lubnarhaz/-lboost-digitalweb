@@ -9,8 +9,9 @@ const navLinks = [
   { label: 'Services', href: '#services', isPage: false },
   { label: 'Packs', href: '#packs', isPage: false },
   { label: 'WalKin', href: '/walkin', isPage: true, badge: 'Nouveau' },
-  { label: 'Processus', href: '#processus', isPage: false },
+  { label: 'Blog', href: '/blog', isPage: true },
   { label: 'FAQ', href: '#faq', isPage: false },
+  { label: 'Nous contacter', href: '#contact', isPage: false },
 ]
 
 export default function Navbar() {
