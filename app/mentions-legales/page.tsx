@@ -30,7 +30,7 @@ export default function MentionsLegales() {
                 <li><span className="text-white/50">Statut :</span> Entrepreneur individuel (auto-entrepreneur)</li>
                 <li><span className="text-white/50">SIRET :</span> 798 949 970 00031</li>
                 <li><span className="text-white/50">Siège :</span> Troyes, France</li>
-                <li><span className="text-white/50">Email :</span> <a href="mailto:l-boost@hotmail.com" className="text-[#C9A84C] hover:underline">l-boost@hotmail.com</a></li>
+                <li><span className="text-white/50">Email :</span> <a href="mailto:contact@lboost-digitalweb.fr" className="text-[#C9A84C] hover:underline">contact@lboost-digitalweb.fr</a></li>
                 <li><span className="text-white/50">Téléphone :</span> <a href="tel:+33756959078" className="text-[#C9A84C] hover:underline">07 56 95 90 78</a></li>
               </ul>
             </section>
@@ -39,7 +39,7 @@ export default function MentionsLegales() {
             <section>
               <h2 className="text-white font-semibold text-lg mb-3">2. Directeur de la publication</h2>
               <p>Le directeur de la publication est le responsable de L-BOOST Digital Web.</p>
-              <p className="mt-1">Contact : <a href="mailto:l-boost@hotmail.com" className="text-[#C9A84C] hover:underline">l-boost@hotmail.com</a></p>
+              <p className="mt-1">Contact : <a href="mailto:contact@lboost-digitalweb.fr" className="text-[#C9A84C] hover:underline">contact@lboost-digitalweb.fr</a></p>
             </section>
 
             {/* Hébergeur */}

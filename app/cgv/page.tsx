@@ -107,7 +107,7 @@ export default function CGV() {
                 Toutefois, conformément à l&apos;article L.221-28, le droit de rétractation ne s&apos;applique pas lorsque la prestation a été <strong className="text-white">pleinement exécutée avant la fin du délai de rétractation</strong> et que l&apos;exécution a commencé avec l&apos;accord exprès du Client.
               </p>
               <p className="mt-3">
-                Pour exercer ce droit, contactez-nous à <a href="mailto:l-boost@hotmail.com" className="text-[#C9A84C] hover:underline">l-boost@hotmail.com</a>.
+                Pour exercer ce droit, contactez-nous à <a href="mailto:contact@lboost-digitalweb.fr" className="text-[#C9A84C] hover:underline">contact@lboost-digitalweb.fr</a>.
               </p>
             </section>
 

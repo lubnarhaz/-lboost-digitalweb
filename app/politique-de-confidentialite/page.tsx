@@ -125,7 +125,7 @@ export default function PolitiqueConfidentialite() {
               </ul>
               <p className="mt-3">
                 Pour exercer vos droits, contactez-nous par email à{' '}
-                <a href="mailto:l-boost@hotmail.com" className="text-[#C9A84C] hover:underline">l-boost@hotmail.com</a>{' '}
+                <a href="mailto:contact@lboost-digitalweb.fr" className="text-[#C9A84C] hover:underline">contact@lboost-digitalweb.fr</a>{' '}
                 ou par courrier à L-BOOST Digital Web, Troyes, France.
               </p>
               <p className="mt-3">
