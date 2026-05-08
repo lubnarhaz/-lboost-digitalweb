@@ -116,8 +116,8 @@ export default function PortfolioStrip() {
           className="text-3xl md:text-4xl font-bold text-white mb-3"
           style={{ fontFamily: 'var(--font-playfair, Georgia, serif)' }}
         >
-          Ils nous ont fait{' '}
-          <span className="text-gradient-gold">confiance</span>
+          Nos{' '}
+          <span className="text-gradient-gold">réalisations</span>
         </h2>
         <p className="text-gray-400 text-sm md:text-base max-w-xl mx-auto">
           Découvrez quelques-unes de nos réalisations

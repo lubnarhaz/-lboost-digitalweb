@@ -387,8 +387,8 @@ export default function ChatbotLena() {
 
             {/* Input */}
             <div
-              className="px-3 py-3 border-t border-white/8 flex items-center gap-2"
-              style={{ background: '#0D1B2A' }}
+              className="px-3 py-3 flex items-center gap-2"
+              style={{ background: '#0D1B2A', borderTop: '1px solid rgba(255,255,255,0.08)' }}
             >
               <input
                 ref={inputRef}
@@ -399,7 +399,8 @@ export default function ChatbotLena() {
                   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input) }
                 }}
                 placeholder="Votre message..."
-                className="flex-1 bg-white/8 border border-white/12 rounded-xl px-3.5 py-2.5 text-white text-xs font-inter placeholder-white/30 focus:outline-none focus:border-[#C9A84C] transition-colors"
+                className="flex-1 rounded-xl px-3.5 py-2.5 text-white text-xs font-inter focus:outline-none transition-colors"
+                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
                 maxLength={300}
                 aria-label="Message à Lena"
               />

@@ -33,16 +33,29 @@ export default function PackCard({
   const springX = useSpring(rotateX, { stiffness: 150, damping: 20 })
   const springY = useSpring(rotateY, { stiffness: 150, damping: 20 })
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const getTiltFromPoint = (clientX: number, clientY: number) => {
     const rect = ref.current?.getBoundingClientRect()
     if (!rect) return
-    const centerX = rect.left + rect.width / 2
-    const centerY = rect.top + rect.height / 2
-    x.set(e.clientX - centerX)
-    y.set(e.clientY - centerY)
+    x.set(clientX - (rect.left + rect.width / 2))
+    y.set(clientY - (rect.top + rect.height / 2))
+  }
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    getTiltFromPoint(e.clientX, e.clientY)
   }
 
   const handleMouseLeave = () => {
+    x.set(0)
+    y.set(0)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    const touch = e.touches[0]
+    if (!touch) return
+    getTiltFromPoint(touch.clientX, touch.clientY)
+  }
+
+  const handleTouchEnd = () => {
     x.set(0)
     y.set(0)
   }
@@ -60,6 +73,10 @@ export default function PackCard({
         style={{ rotateX: springX, rotateY: springY, transformStyle: 'preserve-3d' }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
+        whileTap={{ scale: 0.97 }}
         className={`relative rounded-3xl p-8 h-full flex flex-col transition-shadow duration-300 cursor-default ${
           featured
             ? 'bg-[#0A0A0A] border-2 border-[#C9A84C] featured-pack'

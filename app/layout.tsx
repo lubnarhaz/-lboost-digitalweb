@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Playfair_Display, Inter } from 'next/font/google'
 import './globals.css'
 import { ContactModalProvider } from '@/context/ContactModalContext'
+import SchemaOrg from '@/components/SchemaOrg'
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -18,47 +19,53 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://lboost-digitalweb.fr'),
-  title: 'L-BOOST DigitalWeb | Agence Digitale Premium France',
+  metadataBase: new URL('https://www.lboost-digitalweb.fr'),
+  title: {
+    default: 'L-BOOST Digitalweb | Agence Web à Troyes — Sites, Branding & SEO',
+    template: '%s | L-BOOST Digitalweb Troyes',
+  },
   description:
-    'L-BOOST DigitalWeb — Agence digitale haut de gamme spécialisée dans la création de sites web Next.js, branding, automatisations IA, chatbots et community management pour TPE/PME françaises.',
+    'Agence web à Troyes — création de sites premium, SEO local, branding et fidélisation client. Livraison en 7 jours. Devis gratuit sous 2h.',
   keywords: [
-    'agence digitale',
-    'création site web',
-    'Next.js',
-    'branding',
-    'community management',
-    'chatbot IA',
-    'automatisation',
-    'carte fidélité digitale',
-    'TPE PME',
-    'France',
-    'L-BOOST',
+    'agence web Troyes',
+    'création site internet Troyes',
+    'SEO Troyes',
+    'branding Troyes',
+    'agence digitale Aube',
+    'site web professionnel Troyes',
+    'référencement local Troyes',
+    'carte fidélité digitale Troyes',
+    'agence digitale Troyes',
+    'création site web Troyes',
   ],
-  authors: [{ name: 'L-BOOST DigitalWeb', url: 'https://lboost-digitalweb.fr' }],
-  creator: 'L-BOOST DigitalWeb',
+  authors: [{ name: 'L-BOOST Digitalweb', url: 'https://www.lboost-digitalweb.fr' }],
+  creator: 'L-BOOST Digitalweb',
+  publisher: 'L-BOOST Digitalweb',
+  alternates: {
+    canonical: 'https://www.lboost-digitalweb.fr',
+  },
   openGraph: {
     type: 'website',
     locale: 'fr_FR',
-    url: 'https://lboost-digitalweb.fr',
-    siteName: 'L-BOOST DigitalWeb',
-    title: 'L-BOOST DigitalWeb | Agence Digitale Premium France',
+    url: 'https://www.lboost-digitalweb.fr',
+    siteName: 'L-BOOST Digitalweb',
+    title: 'L-BOOST Digitalweb | Agence Web à Troyes',
     description:
-      'Transformez votre présence digitale avec L-BOOST : sites web Next.js, branding premium, IA & chatbots, community management.',
+      'Agence digitale à Troyes. Sites web premium, SEO local, branding et fidélisation. Devis gratuit sous 2h.',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=630&fit=crop',
+        url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'L-BOOST DigitalWeb — Agence Digitale Premium',
+        alt: 'L-BOOST Digitalweb — Agence Web Troyes',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'L-BOOST DigitalWeb | Agence Digitale Premium France',
-    description: 'Transformez votre présence digitale avec L-BOOST.',
-    images: ['https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=630&fit=crop'],
+    title: 'L-BOOST Digitalweb | Agence Web Troyes',
+    description: 'Création de sites web premium à Troyes. Branding, SEO, fidélisation. Devis gratuit.',
+    images: ['/og-image.jpg'],
   },
   robots: {
     index: true,
@@ -80,6 +87,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" className={`${playfair.variable} ${inter.variable}`}>
+      <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <meta name="theme-color" content="#0A0A0A" />
+        <meta name="geo.region" content="FR-10" />
+        <meta name="geo.placename" content="Troyes" />
+        <meta name="geo.position" content="48.2973;4.0744" />
+        <meta name="ICBM" content="48.2973, 4.0744" />
+        <SchemaOrg />
+      </head>
       <body className="font-inter antialiased">
         <ContactModalProvider>
           {children}
