@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { getWhatsAppURL, type WhatsAppContext } from '@/lib/whatsapp-messages'
+import { useContactModal } from '@/context/ContactModalContext'
 import AnimatedSection from '@/components/AnimatedSection'
 
 interface SectionFOMOProps {
@@ -11,7 +11,7 @@ interface SectionFOMOProps {
   stat: string
   statLabel: string
   bouton: string
-  context?: WhatsAppContext
+  context?: string
 }
 
 export default function SectionFOMO({
@@ -21,8 +21,8 @@ export default function SectionFOMO({
   stat,
   statLabel,
   bouton,
-  context = 'audit',
 }: SectionFOMOProps) {
+  const { openModal } = useContactModal()
   return (
     <section className="relative py-20 md:py-28 overflow-hidden">
       {/* Background */}
@@ -83,16 +83,14 @@ export default function SectionFOMO({
 
           {/* CTA Button */}
           <div>
-            <motion.a
-              href={getWhatsAppURL(context)}
-              target="_blank"
-              rel="noopener noreferrer"
+            <motion.button
+              onClick={openModal}
               className="inline-flex items-center gap-3 bg-[#C9A84C] text-[#0A0A0A] px-8 py-4 rounded-xl font-bold text-base font-inter hover:bg-[#E4C46E] transition-all duration-300 shadow-lg shadow-[#C9A84C]/20"
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.97 }}
             >
               {bouton}
-            </motion.a>
+            </motion.button>
           </div>
         </AnimatedSection>
       </div>
