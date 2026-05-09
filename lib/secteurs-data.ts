@@ -64,6 +64,24 @@ export interface SecteurFOMO {
   bouton: string
 }
 
+export interface BeforeAfterItem {
+  titre: string
+  description: string
+}
+
+export interface BeforeAfterStat {
+  valeur: string
+  label: string
+}
+
+export interface SecteurBeforeAfter {
+  photoAvant: string
+  photoApres: string
+  itemsAvant: BeforeAfterItem[]
+  itemsApres: BeforeAfterItem[]
+  stats: BeforeAfterStat[]
+}
+
 export interface Secteur {
   slug: string
   nom: string
@@ -80,6 +98,7 @@ export interface Secteur {
   }
   douleurs: SecteurDouleur[]
   avantApres: SecteurAvantApres[]
+  beforeAfter: SecteurBeforeAfter
   actions: SecteurAction[]
   benefices: SecteurBenefice[]
   fomo: SecteurFOMO
@@ -114,6 +133,27 @@ export const SECTEURS: Secteur[] = [
       { avant: 'Bouche-à-oreille uniquement', apres: 'Visible sur Google Maps + Instagram' },
       { avant: 'Pas de site professionnel', apres: 'Site vitrine premium avec galerie' },
     ],
+    beforeAfter: {
+      photoAvant: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=800&q=80',
+      photoApres: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&q=80',
+      itemsAvant: [
+        { titre: 'Planning géré sur papier', description: 'Impossible de savoir en temps réel quels créneaux sont libres.' },
+        { titre: 'Clientes qui oublient leur RDV', description: 'No-shows fréquents, aucun rappel automatique.' },
+        { titre: 'Aucun programme fidélité', description: 'Les clientes viennent une fois puis disparaissent.' },
+        { titre: 'Invisible sur Google', description: 'Bouche-à-oreille uniquement, pas de site ni fiche Google.' },
+      ],
+      itemsApres: [
+        { titre: 'Réservation en ligne 24h/24', description: 'Vos clientes réservent depuis leur téléphone, même à minuit.' },
+        { titre: 'Rappels automatiques par SMS', description: 'Fini les no-shows : rappels à J-1 et confirmations instantanées.' },
+        { titre: 'Carte fidélité digitale WalKin', description: 'Récompenses automatiques qui font revenir 3x plus souvent.' },
+        { titre: 'N°1 sur Google Maps', description: 'Visible sur Google, Instagram et Apple Wallet.' },
+      ],
+      stats: [
+        { valeur: '−70%', label: 'Annulations' },
+        { valeur: '+40%', label: 'Taux de remplissage' },
+        { valeur: '×3', label: 'Nouvelles clientes/mois' },
+      ],
+    },
     actions: [
       { numero: 1, titre: 'Site vitrine premium', description: 'Un site élégant qui reflète votre expertise avec galerie photo, tarifs et réservation en ligne.' },
       { numero: 2, titre: 'Google Business Profile optimisé', description: 'Apparaissez en premier quand quelqu\'un cherche un salon de beauté près de chez vous.' },
@@ -167,6 +207,27 @@ export const SECTEURS: Secteur[] = [
       { avant: 'Menu en PDF illisible', apres: 'Menu en ligne responsive et moderne' },
       { avant: 'Avis Google non gérés', apres: 'Avis 5 étoiles collectés automatiquement' },
     ],
+    beforeAfter: {
+      photoAvant: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80',
+      photoApres: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80',
+      itemsAvant: [
+        { titre: 'Commissions UberEats à 30%', description: 'Les plateformes mangent vos marges et possèdent la relation client.' },
+        { titre: 'Aucune base de données clients', description: 'Impossible d\'envoyer une promo ou de recontacter vos habitués.' },
+        { titre: 'Pas de programme fidélité', description: 'Vos clients viennent une fois et repartent chez le concurrent.' },
+        { titre: 'Menu en PDF illisible', description: 'Votre carte est introuvable ou impossible à lire sur mobile.' },
+      ],
+      itemsApres: [
+        { titre: 'Commandes directes à 1,5%', description: 'Vos clients commandent via votre propre système, sans intermédiaire.' },
+        { titre: 'Fichier client enrichi automatiquement', description: 'Chaque commande alimente votre base pour des promos ciblées.' },
+        { titre: 'Carte fidélité digitale avec push', description: '10e repas offert, offres flash envoyées directement sur l\'écran.' },
+        { titre: 'Menu en ligne responsive', description: 'Une carte interactive, belle et lisible sur tous les écrans.' },
+      ],
+      stats: [
+        { valeur: '−30%', label: 'De commission récupérée' },
+        { valeur: '+180', label: 'Clients fidélisés' },
+        { valeur: '4,7★', label: 'Note Google moyenne' },
+      ],
+    },
     actions: [
       { numero: 1, titre: 'Site vitrine avec menu digital', description: 'Un site appétissant avec menu interactif, photos de plats et réservation de table.' },
       { numero: 2, titre: 'Système de commande en ligne', description: 'Vos clients commandent directement chez vous. Fini les 30% de commission.' },
@@ -220,6 +281,27 @@ export const SECTEURS: Secteur[] = [
       { avant: 'Communication générique', apres: 'Personal branding différenciant' },
       { avant: 'Pas de suivi prospects', apres: 'CRM et relances automatisées' },
     ],
+    beforeAfter: {
+      photoAvant: 'https://images.unsplash.com/photo-1448630360428-65456885c650?w=800&q=80',
+      photoApres: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80',
+      itemsAvant: [
+        { titre: 'Site web années 2010', description: 'Un site qui ne reflète pas votre expertise et fait fuir les prospects.' },
+        { titre: 'Leads via portails uniquement', description: 'Dépendance totale aux plateformes, zéro lead en direct.' },
+        { titre: 'Communication générique', description: 'Impossible de vous différencier des grandes agences nationales.' },
+        { titre: 'Aucun suivi prospects', description: 'Les leads tombent dans l\'oubli, pas de relance structurée.' },
+      ],
+      itemsApres: [
+        { titre: 'Site premium avec estimation en ligne', description: 'Un outil qui génère des leads qualifiés 24h/24.' },
+        { titre: 'Leads directs via Google et réseaux', description: 'Votre propre flux de prospects, sans dépendre des portails.' },
+        { titre: 'Personal branding différenciant', description: 'Vous devenez LA référence immobilière de votre zone.' },
+        { titre: 'CRM et relances automatisées', description: 'Chaque lead est suivi et relancé au bon moment.' },
+      ],
+      stats: [
+        { valeur: '×4', label: 'Contacts entrants' },
+        { valeur: '+68', label: 'Avis Google' },
+        { valeur: 'Top 3', label: 'Google Maps local' },
+      ],
+    },
     actions: [
       { numero: 1, titre: 'Site vitrine premium immobilier', description: 'Un site qui inspire confiance avec catalogue de biens, estimateur en ligne et prise de RDV.' },
       { numero: 2, titre: 'SEO local immobilier', description: 'Positionnez-vous sur "agence immobilière + ville" et générez des leads organiques.' },
@@ -273,6 +355,27 @@ export const SECTEURS: Secteur[] = [
       { avant: 'Pas de fiche Google', apres: 'Google Business optimisé avec 50+ avis' },
       { avant: 'Zéro présence réseaux sociaux', apres: 'Instagram et Facebook actifs' },
     ],
+    beforeAfter: {
+      photoAvant: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80',
+      photoApres: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80',
+      itemsAvant: [
+        { titre: 'Introuvable sur Google', description: 'Vos concurrents apparaissent, pas vous.' },
+        { titre: 'Pas de site ou site obsolète', description: 'Votre vitrine en ligne fait fuir les prospects.' },
+        { titre: 'Bouche-à-oreille uniquement', description: 'Impossible de contrôler votre flux de nouveaux clients.' },
+        { titre: 'Zéro présence réseaux sociaux', description: 'Instagram, Facebook, Google Maps… vous n\'existez pas.' },
+      ],
+      itemsApres: [
+        { titre: 'N°1 sur "métier + ville"', description: 'Vous apparaissez en premier quand un client vous cherche.' },
+        { titre: 'Site vitrine professionnel', description: 'Un site moderne qui reflète votre savoir-faire et génère des contacts.' },
+        { titre: 'Flux régulier de nouveaux clients', description: 'Google, réseaux sociaux et bouche-à-oreille digitalisé.' },
+        { titre: 'Google Business avec 50+ avis', description: 'Une fiche optimisée qui inspire confiance immédiatement.' },
+      ],
+      stats: [
+        { valeur: '+47', label: 'Avis Google en 2 mois' },
+        { valeur: '×3', label: 'Nouveaux contacts/semaine' },
+        { valeur: 'Page 1', label: 'Google local' },
+      ],
+    },
     actions: [
       { numero: 1, titre: 'Site vitrine professionnel', description: 'Un site qui vous représente avec vos services, réalisations, témoignages et formulaire.' },
       { numero: 2, titre: 'Google Business Profile', description: 'Création et optimisation complète pour apparaître sur Google Maps et la recherche locale.' },
@@ -326,6 +429,27 @@ export const SECTEURS: Secteur[] = [
       { avant: 'Pas de contenu structuré', apres: 'Blog, vidéos, lead magnets qui convertissent' },
       { avant: 'Pas de récurrence', apres: 'Programmes et abonnements automatisés' },
     ],
+    beforeAfter: {
+      photoAvant: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80',
+      photoApres: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80',
+      itemsAvant: [
+        { titre: 'Invisible en ligne', description: 'Votre expertise reste un secret bien gardé, personne ne vous trouve.' },
+        { titre: 'Prospection manuelle épuisante', description: 'Vous passez plus de temps à chercher des clients qu\'à les accompagner.' },
+        { titre: 'Tarifs négociés à la baisse', description: 'Sans positionnement premium, vous vous battez sur les prix.' },
+        { titre: 'Pas de tunnel de conversion', description: 'Votre site ne convertit pas les visiteurs en clients.' },
+      ],
+      itemsApres: [
+        { titre: 'Autorité reconnue dans votre niche', description: 'Vous devenez LA référence que les clients viennent chercher.' },
+        { titre: 'Les clients viennent à vous', description: 'Un système d\'inbound marketing qui attire les bons profils.' },
+        { titre: 'Positionnement premium justifié', description: 'Vos tarifs reflètent votre valeur, plus de négociation.' },
+        { titre: 'Tunnel qui convertit en autopilote', description: 'Lead magnet, séquence email, page de vente — 24h/24.' },
+      ],
+      stats: [
+        { valeur: '×3', label: 'Moins de temps en prospection' },
+        { valeur: '+8', label: 'Leads qualifiés/semaine' },
+        { valeur: '6 sem.', label: 'Agenda rempli à l\'avance' },
+      ],
+    },
     actions: [
       { numero: 1, titre: 'Site vitrine expert', description: 'Un site qui positionne votre expertise : témoignages, cas clients, méthode, prise de RDV.' },
       { numero: 2, titre: 'Personal branding', description: 'Logo, charte graphique, positionnement : devenez LA référence de votre domaine.' },
@@ -380,6 +504,27 @@ export const SECTEURS: Secteur[] = [
       { avant: 'Pubs sans retour sur investissement', apres: 'Campagnes optimisées et rentables' },
       { avant: 'Pas de fidélisation', apres: 'Programme de fidélité et offres VIP' },
     ],
+    beforeAfter: {
+      photoAvant: 'https://images.unsplash.com/photo-1508780709619-79562169bc64?w=800&q=80',
+      photoApres: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&q=80',
+      itemsAvant: [
+        { titre: 'Site lent et mal conçu', description: 'Vos visiteurs fuient avant même de voir vos produits.' },
+        { titre: '70% de paniers abandonnés', description: 'Aucune relance, aucun email — les ventes s\'évaporent.' },
+        { titre: 'Pubs sans retour', description: 'Budget publicitaire brûlé sans conversion mesurable.' },
+        { titre: 'Pas de fidélisation', description: 'Vos clients achètent une fois et ne reviennent jamais.' },
+      ],
+      itemsApres: [
+        { titre: 'Boutique rapide et optimisée', description: 'Un tunnel d\'achat fluide, mobile-first, qui convertit.' },
+        { titre: 'Séquences de relance automatiques', description: 'Les paniers abandonnés sont relancés et récupérés.' },
+        { titre: 'Campagnes optimisées et rentables', description: 'ROAS multiplié par 3 grâce au retargeting intelligent.' },
+        { titre: 'Programme fidélité et offres VIP', description: 'Points, niveaux, exclusivités — vos clients reviennent.' },
+      ],
+      stats: [
+        { valeur: '+35%', label: 'Taux de conversion' },
+        { valeur: '23', label: 'Paniers récupérés le 1er mois' },
+        { valeur: '×2', label: 'Clients qui reviennent' },
+      ],
+    },
     actions: [
       { numero: 1, titre: 'Refonte ou création boutique', description: 'Un e-commerce rapide, mobile-first, optimisé pour la conversion avec un tunnel d\'achat fluide.' },
       { numero: 2, titre: 'Optimisation du taux de conversion', description: 'Analyse UX, A/B testing, optimisation des fiches produits et du checkout.' },

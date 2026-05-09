@@ -3,11 +3,12 @@
 import { useParams } from 'next/navigation'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { ArrowRight, Check, X, ChevronRight } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import AnimatedSection, { AnimatedItem } from '@/components/AnimatedSection'
+import BeforeAfterVisual from '@/components/BeforeAfterVisual'
 import SectionFOMO from '@/components/SectionFOMO'
 import CTAContact from '@/components/CTAContact'
 import { getSecteurBySlug, SECTEURS } from '@/lib/secteurs-data'
@@ -148,58 +149,9 @@ export default function SecteurPage() {
       </section>
 
       {/* ════════════════════════════════════════════════
-          SECTION 3 — AVANT / APRÈS (fond sombre)
+          SECTION 3 — AVANT / APRÈS (split screen immersif)
       ════════════════════════════════════════════════ */}
-      <section className="bg-[#0A0A0A] py-20 md:py-28">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <AnimatedSection className="text-center mb-14">
-            <div className="w-12 h-px bg-[#C9A84C] mx-auto mb-6" />
-            <h2
-              className="font-playfair font-bold text-white mb-4"
-              style={{ fontSize: 'clamp(24px, 3.5vw, 40px)' }}
-            >
-              Avant / Après L-BOOST
-            </h2>
-            <p className="text-[#9CA3AF] font-inter max-w-lg mx-auto">
-              La transformation concrète que nous apportons à votre activité.
-            </p>
-          </AnimatedSection>
-
-          <div className="space-y-4">
-            {secteur.avantApres.map((item, i) => (
-              <AnimatedSection key={i} delay={i * 0.08}>
-                <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-3 md:gap-4 items-center">
-                  {/* Avant */}
-                  <div
-                    className="flex items-center gap-3 rounded-xl p-4 transition-all duration-300"
-                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
-                  >
-                    <X size={16} className="text-[#6B7280] flex-shrink-0" />
-                    <span className="text-[#9CA3AF] font-inter text-sm line-through decoration-[#6B7280]/40">{item.avant}</span>
-                  </div>
-
-                  {/* Arrow */}
-                  <div className="hidden md:flex items-center justify-center">
-                    <ArrowRight size={18} className="text-[#C9A84C]" />
-                  </div>
-                  <div className="flex md:hidden items-center justify-center py-1">
-                    <ArrowRight size={16} className="text-[#C9A84C] rotate-90" />
-                  </div>
-
-                  {/* Après */}
-                  <div
-                    className="flex items-center gap-3 rounded-xl p-4 transition-all duration-300"
-                    style={{ background: 'rgba(201,168,76,0.05)', border: '1px solid rgba(201,168,76,0.3)' }}
-                  >
-                    <Check size={16} className="text-[#C9A84C] flex-shrink-0" />
-                    <span className="text-white font-inter text-sm font-medium">{item.apres}</span>
-                  </div>
-                </div>
-              </AnimatedSection>
-            ))}
-          </div>
-        </div>
-      </section>
+      <BeforeAfterVisual {...secteur.beforeAfter} />
 
       {/* ════════════════════════════════════════════════
           SECTION 4 — FOMO (fond sombre)
