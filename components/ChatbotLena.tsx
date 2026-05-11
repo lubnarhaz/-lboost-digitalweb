@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Send, Minimize2 } from 'lucide-react'
 
@@ -18,7 +19,18 @@ const SUGGESTIONS = [
 const LENA_AVATAR = 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=face'
 
 const STORAGE_KEY = 'lena-chat-history'
-const STORAGE_EXPIRY = 30 * 60 * 1000 // 30 minutes
+const STORAGE_EXPIRY = 30 * 60 * 1000
+
+const POPUP_MESSAGES: Record<string, string> = {
+  '/': "Bonjour, je suis Léna. Vous cherchez à développer votre présence en ligne ? Je peux vous guider en quelques minutes.",
+  '/walkin': "Vous êtes commerçant ? Je peux vous montrer comment WalKin fonctionne concrètement pour votre activité.",
+  '/secteurs/beaute-bien-etre': "Salon, institut ou spa — je connais bien vos enjeux. On en parle ?",
+  '/secteurs/restauration': "Vous utilisez UberEats ? Calculons ensemble ce que vous pourriez récupérer.",
+  '/secteurs/immobilier': "Comment se porte votre visibilité en ligne actuellement ? Je peux l'analyser pour vous.",
+  '/secteurs/coaching-consulting': "Vous cherchez à attirer plus de clients qualifiés ? On regarde ça ensemble.",
+  '/secteurs/ecommerce': "Des visiteurs mais peu de ventes ? Je peux identifier le problème gratuitement.",
+  '/secteurs/professionnels-locaux': "Êtes-vous facilement trouvable sur Google dans votre ville ? Vérification gratuite.",
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Msg {
@@ -73,7 +85,6 @@ function loadChat(): StoredChat | null {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return null
     const data: StoredChat = JSON.parse(raw)
-    // Expire after 30 minutes of inactivity
     if (Date.now() - data.savedAt > STORAGE_EXPIRY) {
       localStorage.removeItem(STORAGE_KEY)
       return null
@@ -82,6 +93,19 @@ function loadChat(): StoredChat | null {
   } catch {
     return null
   }
+}
+
+// ── Social proof counter ──────────────────────────────────────────────────────
+function useRealisticCounter() {
+  const [count, setCount] = useState(23)
+  useEffect(() => {
+    const hour = new Date().getHours()
+    const dayOfWeek = new Date().getDay()
+    const bonus = (hour >= 9 && hour <= 18) ? 3 : 0
+    const weekBonus = (dayOfWeek >= 1 && dayOfWeek <= 5) ? 2 : 0
+    setCount(23 + bonus + weekBonus)
+  }, [])
+  return count
 }
 
 // ── Lena Avatar ───────────────────────────────────────────────────────────────
@@ -109,18 +133,21 @@ function LenaAvatar({ size = 36, online = true }: { size?: number; online?: bool
 
 // ── Component ─────────────────────────────────────────────────────────────────
 export default function ChatbotLena() {
+  const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [msgs, setMsgs] = useState<Msg[]>([])
   const [input, setInput] = useState('')
   const [typing, setTyping] = useState(false)
   const [streamingText, setStreamingText] = useState('')
   const [welcomeShown, setWelcomeShown] = useState(false)
-  const [showBubble, setShowBubble] = useState(false)
+  const [showPopup, setShowPopup] = useState(false)
+  const [popupDismissed, setPopupDismissed] = useState(false)
   const [showBadge, setShowBadge] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const nextId = useRef(1)
   const abortRef = useRef<AbortController | null>(null)
+  const auditCount = useRealisticCounter()
 
   // ── Load persisted conversation on mount ──
   useEffect(() => {
@@ -142,7 +169,7 @@ export default function ChatbotLena() {
   // Badge "1 message non lu" after 4s
   useEffect(() => {
     const saved = loadChat()
-    if (saved && saved.msgs.length > 0) return // Don't show badge for returning users
+    if (saved && saved.msgs.length > 0) return
     const t = setTimeout(() => {
       if (!open) setShowBadge(true)
     }, 4000)
@@ -150,29 +177,49 @@ export default function ChatbotLena() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Auto-welcome + teaser bubble
+  // Auto-welcome
   useEffect(() => {
     if (welcomeShown) return
     const t1 = setTimeout(() => {
       setWelcomeShown(true)
       pushBot(WELCOME)
     }, 3000)
-    const t2 = setTimeout(() => {
-      if (!open) setShowBubble(true)
-    }, 4500)
-    return () => { clearTimeout(t1); clearTimeout(t2) }
+    return () => clearTimeout(t1)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [welcomeShown])
 
+  // Auto-popup: 8 seconds OR 40% scroll
   useEffect(() => {
-    if (open) setShowBubble(false)
-  }, [open])
+    if (popupDismissed || open) return
+
+    const timer = setTimeout(() => {
+      if (!open && !popupDismissed) setShowPopup(true)
+    }, 8000)
+
+    const handleScroll = () => {
+      const scrollPercent = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)
+      if (scrollPercent > 0.4 && !open && !popupDismissed) {
+        setShowPopup(true)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [open, popupDismissed])
 
   useEffect(() => {
-    if (!showBubble) return
-    const t = setTimeout(() => setShowBubble(false), 6000)
+    if (open) { setShowPopup(false) }
+  }, [open])
+
+  // Auto-dismiss popup after 12 seconds
+  useEffect(() => {
+    if (!showPopup) return
+    const t = setTimeout(() => setShowPopup(false), 12000)
     return () => clearTimeout(t)
-  }, [showBubble])
+  }, [showPopup])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -195,12 +242,10 @@ export default function ChatbotLena() {
     setTyping(true)
     setStreamingText('')
 
-    // Build conversation history for API
     const apiMessages = newMsgs
       .filter((m) => m.role === 'user' || m.role === 'bot')
       .map((m) => ({ role: m.role === 'user' ? 'user' as const : 'assistant' as const, content: m.text }))
 
-    // Abort previous request if any
     abortRef.current?.abort()
     const controller = new AbortController()
     abortRef.current = controller
@@ -213,9 +258,7 @@ export default function ChatbotLena() {
         signal: controller.signal,
       })
 
-      if (!res.ok || !res.body) {
-        throw new Error('Stream failed')
-      }
+      if (!res.ok || !res.body) throw new Error('Stream failed')
 
       const reader = res.body.getReader()
       const decoder = new TextDecoder()
@@ -266,46 +309,73 @@ export default function ChatbotLena() {
 
   const handleOpen = () => {
     setShowBadge(false)
+    setShowPopup(false)
+    setPopupDismissed(true)
     setOpen(true)
   }
 
+  const popupMessage = POPUP_MESSAGES[pathname] || POPUP_MESSAGES['/']
   const isFirstWelcome = msgs.length === 1 && msgs[0]?.text === WELCOME
 
   return (
     <>
-      {/* Teaser bubble */}
+      {/* ── Contextual popup bubble ── */}
       <AnimatePresence>
-        {showBubble && !open && (
+        {showPopup && !open && (
           <motion.div
-            initial={{ opacity: 0, x: 10, scale: 0.9 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: 10, scale: 0.9 }}
-            transition={{ duration: 0.2 }}
-            className="fixed z-[60] bg-white rounded-2xl rounded-br-none shadow-xl border border-gray-100 px-4 py-3 max-w-[210px]"
-            style={{ bottom: 110, right: 20, boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}
+            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 5, scale: 0.95 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            className="fixed z-[60] cursor-pointer"
+            style={{ bottom: 120, right: 24 }}
+            onClick={handleOpen}
           >
-            <p className="text-[#0A0A0A] text-xs font-inter leading-relaxed">
-              Bonjour ! Besoin d&apos;aide pour votre projet ?
-            </p>
-            <div className="absolute -bottom-2 right-4 w-3 h-3 bg-white border-b border-r border-gray-100 rotate-45" />
+            <div
+              className="relative rounded-2xl rounded-br-sm px-5 py-4 max-w-[260px]"
+              style={{
+                background: '#FFFFFF',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.05)',
+              }}
+            >
+              <p className="text-[#0A0A0A] text-[13px] font-inter leading-relaxed mb-3">
+                {popupMessage}
+              </p>
+              <div className="flex items-center gap-1.5 pt-2" style={{ borderTop: '1px solid #F3F4F6' }}>
+                <div className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />
+                <p className="text-[#6B7280] text-[10px] font-inter">
+                  {auditCount} audits demandés cette semaine
+                </p>
+              </div>
+              <button
+                onClick={(e) => { e.stopPropagation(); setShowPopup(false); setPopupDismissed(true) }}
+                className="absolute top-2 right-2.5 text-[#9CA3AF] hover:text-[#6B7280] text-sm leading-none transition-colors"
+                aria-label="Fermer"
+              >
+                ×
+              </button>
+              {/* Triangle pointing down to bubble */}
+              <div
+                className="absolute -bottom-2 right-10 w-3 h-3 bg-white rotate-45"
+                style={{ boxShadow: '2px 2px 4px rgba(0,0,0,0.05)' }}
+              />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* ── Floating trigger — bottom right ── */}
       <motion.div
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 2.2, type: 'spring', stiffness: 240, damping: 16 }}
+        initial={{ opacity: 0, y: 80, scale: 0.8 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ delay: 2.5, duration: 0.5, ease: 'easeOut' }}
         className="fixed bottom-6 right-4 md:right-6 z-50"
       >
         {/* Badge notification */}
         {showBadge && !open && (
           <span
+            className="absolute -top-1 -right-1 z-10"
             style={{
-              position: 'absolute',
-              top: -4,
-              right: -4,
               background: '#ef4444',
               color: 'white',
               borderRadius: '50%',
@@ -316,9 +386,7 @@ export default function ChatbotLena() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              border: '2px solid #0D0D0D',
-              animation: 'badgePop 0.3s ease',
-              zIndex: 1,
+              border: '2px solid #0A0A0A',
             }}
           >
             1
@@ -326,7 +394,6 @@ export default function ChatbotLena() {
         )}
 
         {open ? (
-          /* Close button */
           <motion.button
             initial={{ scale: 0.7, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -340,55 +407,83 @@ export default function ChatbotLena() {
             <X size={20} className="text-white" />
           </motion.button>
         ) : (
-          <>
-            {/* ── Mobile trigger: round button with avatar ── */}
-            <button
-              onClick={handleOpen}
-              className="mobile-only relative w-14 h-14 rounded-full border-2 border-[#C9A84C] flex items-center justify-center cursor-pointer"
-              style={{
-                background: '#0D1B2A',
-                animation: 'lenaPulse 3s ease-in-out infinite',
-                boxShadow: '0 0 20px rgba(201,168,76,0.3), 0 4px 16px rgba(0,0,0,0.5)',
-              }}
-              aria-label="Parler à Léna, conseillère L-BOOST"
-            >
-              <div className="relative w-[44px] h-[44px] rounded-full overflow-hidden flex-shrink-0">
-                <Image
-                  src={LENA_AVATAR}
-                  alt="Lena"
-                  fill
-                  className="object-cover"
-                  sizes="44px"
-                />
-              </div>
-              <span
-                className="absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full bg-green-500 border-2 border-[#0D0D0D]"
-                style={{ animation: 'lenaDotBlink 2s ease-in-out infinite' }}
+          <motion.button
+            data-lena-trigger
+            onClick={handleOpen}
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="flex items-center gap-3 cursor-pointer"
+            style={{
+              background: 'linear-gradient(135deg, #1A1A2E 0%, #0A0A0A 100%)',
+              border: '1px solid rgba(201,168,76,0.4)',
+              borderRadius: '20px',
+              padding: '12px 16px',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,168,76,0.1), 0 0 40px rgba(201,168,76,0.08)',
+              maxWidth: '280px',
+            }}
+            aria-label="Parler à Léna, conseillère L-BOOST"
+          >
+            {/* Avatar with pulse rings */}
+            <div className="relative flex-shrink-0">
+              <motion.div
+                animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0, 0.4] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="absolute rounded-full"
+                style={{ inset: '-6px', border: '2px solid #C9A84C' }}
               />
-            </button>
+              <motion.div
+                animate={{ scale: [1, 1.35, 1], opacity: [0.2, 0, 0.2] }}
+                transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
+                className="absolute rounded-full"
+                style={{ inset: '-10px', border: '1px solid #C9A84C' }}
+              />
+              <div
+                className="w-11 h-11 rounded-full overflow-hidden relative"
+                style={{ border: '2px solid #C9A84C' }}
+              >
+                <Image src={LENA_AVATAR} alt="Léna" fill className="object-cover" sizes="44px" />
+              </div>
+              <motion.div
+                animate={{ scale: [1, 1.3, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+                className="absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full"
+                style={{ background: '#10B981', border: '2px solid #0A0A0A' }}
+              />
+            </div>
 
-            {/* ── Desktop trigger: horizontal card ── */}
-            <button
-              onClick={handleOpen}
-              className="desktop-only lena-trigger"
-              aria-label="Parler à Léna, conseillère L-BOOST"
+            {/* Text — hidden on very small screens */}
+            <div className="hidden sm:block flex-1 min-w-0">
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <p className="text-white text-[13px] font-bold font-inter">Léna</p>
+                <span
+                  className="text-[9px] font-semibold font-inter px-1.5 py-px rounded-full"
+                  style={{
+                    background: 'rgba(16,185,129,0.15)',
+                    border: '1px solid rgba(16,185,129,0.3)',
+                    color: '#10B981',
+                    letterSpacing: '0.05em',
+                  }}
+                >
+                  EN LIGNE
+                </span>
+              </div>
+              <p className="text-[#9CA3AF] text-[11px] font-inter truncate">
+                Conseillère · Répond en quelques secondes
+              </p>
+            </div>
+
+            {/* Message icon */}
+            <div
+              className="hidden sm:flex w-8 h-8 rounded-lg items-center justify-center flex-shrink-0"
+              style={{
+                background: 'rgba(201,168,76,0.15)',
+                border: '1px solid rgba(201,168,76,0.3)',
+              }}
             >
-              <div className="lena-avatar-wrapper">
-                <Image
-                  src={LENA_AVATAR}
-                  alt="Lena"
-                  width={44}
-                  height={44}
-                  className="lena-avatar"
-                />
-                <span className="lena-online-dot" />
-              </div>
-              <div className="lena-trigger-text">
-                <div className="lena-trigger-name">Lena</div>
-                <div className="lena-trigger-subtitle">Conseillère L-BOOST · En ligne</div>
-              </div>
-            </button>
-          </>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </div>
+          </motion.button>
         )}
       </motion.div>
 
@@ -417,7 +512,7 @@ export default function ChatbotLena() {
               <LenaAvatar size={40} online />
               <div className="flex-1">
                 <div className="flex items-center gap-1.5">
-                  <p className="text-white font-semibold text-sm font-inter">Lena</p>
+                  <p className="text-white font-semibold text-sm font-inter">Léna</p>
                   <span className="text-white/80 text-[10px] font-inter">· L-BOOST</span>
                 </div>
                 <div className="flex items-center gap-1">
@@ -466,7 +561,6 @@ export default function ChatbotLena() {
                       {msg.ts}
                     </p>
 
-                    {/* Quick suggestions after welcome */}
                     {msg.role === 'bot' && msg.text === WELCOME && isFirstWelcome && (
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {SUGGESTIONS.map((s) => (
@@ -485,7 +579,6 @@ export default function ChatbotLena() {
                 </motion.div>
               ))}
 
-              {/* Streaming message — shows text as it arrives */}
               {typing && streamingText && (
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
@@ -502,7 +595,6 @@ export default function ChatbotLena() {
                 </motion.div>
               )}
 
-              {/* Typing indicator — only when no streaming text yet */}
               <AnimatePresence>
                 {typing && !streamingText && (
                   <motion.div

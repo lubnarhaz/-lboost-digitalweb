@@ -6,11 +6,19 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, MessageCircle, ChevronDown } from 'lucide-react'
 import { SECTEURS } from '@/lib/secteurs-data'
+import { SERVICES } from '@/lib/services-data'
+
+const SERVICE_DROPDOWN_ITEMS = [
+  ...SERVICES.map((s) => ({ label: s.nom, href: `/services/${s.slug}` })),
+  { label: 'Carte Fidélité Digitale', href: '/walkin' },
+]
 
 const navLinks = [
-  { label: 'Services', href: '#services', isPage: false },
-  { label: 'Secteurs', href: '#secteurs', isPage: false, hasDropdown: true },
+  { label: 'Accueil', href: '/', isPage: true },
+  { label: 'Services', href: '#services', isPage: false, hasDropdown: true, dropdownType: 'services' as const },
+  { label: 'Secteurs', href: '#secteurs', isPage: false, hasDropdown: true, dropdownType: 'secteurs' as const },
   { label: 'Packs', href: '#packs', isPage: false },
+  { label: 'Tarifs', href: '/tarifs', isPage: true },
   { label: 'WalKin', href: '/walkin', isPage: true, badge: 'Nouveau' },
   { label: 'Blog', href: '/blog', isPage: true },
   { label: 'FAQ', href: '#faq', isPage: false },
@@ -20,9 +28,10 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [secteursOpen, setSecteursOpen] = useState(false)
-  const [mobileSecteursOpen, setMobileSecteursOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  const [mobileOpenDropdown, setMobileOpenDropdown] = useState<string | null>(null)
+  const servicesRef = useRef<HTMLDivElement>(null)
+  const secteursRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
   const pathname = usePathname()
 
@@ -35,8 +44,12 @@ export default function Navbar() {
   // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setSecteursOpen(false)
+      const target = e.target as Node
+      if (
+        servicesRef.current && !servicesRef.current.contains(target) &&
+        secteursRef.current && !secteursRef.current.contains(target)
+      ) {
+        setOpenDropdown(null)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -45,7 +58,7 @@ export default function Navbar() {
 
   const handleNavClick = (href: string, isPage?: boolean) => {
     setMenuOpen(false)
-    setSecteursOpen(false)
+    setOpenDropdown(null)
     if (isPage) {
       router.push(href)
       return
@@ -56,6 +69,15 @@ export default function Navbar() {
     }
     const el = document.querySelector(href)
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  const getDropdownItems = (type: string) => {
+    if (type === 'services') return SERVICE_DROPDOWN_ITEMS
+    return SECTEURS.map((s) => ({ label: s.nom, href: `/secteurs/${s.slug}` }))
+  }
+
+  const getDropdownRef = (type: string) => {
+    return type === 'services' ? servicesRef : secteursRef
   }
 
   return (
@@ -93,38 +115,38 @@ export default function Navbar() {
             <nav className="hidden md:flex items-center gap-6" aria-label="Navigation principale">
               {navLinks.map((link) => (
                 link.hasDropdown ? (
-                  <div key={link.href} className="relative" ref={dropdownRef}>
+                  <div key={link.href} className="relative" ref={getDropdownRef(link.dropdownType!)}>
                     <button
-                      onClick={() => setSecteursOpen(!secteursOpen)}
-                      onMouseEnter={() => setSecteursOpen(true)}
+                      onClick={() => setOpenDropdown(openDropdown === link.dropdownType ? null : link.dropdownType!)}
+                      onMouseEnter={() => setOpenDropdown(link.dropdownType!)}
                       className="relative flex items-center gap-1 text-white/70 hover:text-[#C9A84C] text-sm font-medium tracking-wide transition-colors duration-200 group"
                     >
                       {link.label}
-                      <ChevronDown size={14} className={`transition-transform duration-200 ${secteursOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown size={14} className={`transition-transform duration-200 ${openDropdown === link.dropdownType ? 'rotate-180' : ''}`} />
                       <span className="absolute -bottom-1 left-0 w-0 h-px bg-[#C9A84C] transition-all duration-300 group-hover:w-full" />
                     </button>
 
                     <AnimatePresence>
-                      {secteursOpen && (
+                      {openDropdown === link.dropdownType && (
                         <motion.div
                           initial={{ opacity: 0, y: 8 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 8 }}
                           transition={{ duration: 0.2 }}
-                          onMouseLeave={() => setSecteursOpen(false)}
+                          onMouseLeave={() => setOpenDropdown(null)}
                           className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-64 bg-[#0A0A0A]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden"
                         >
-                          {SECTEURS.map((secteur, i) => (
-                              <Link
-                                key={secteur.slug}
-                                href={`/secteurs/${secteur.slug}`}
-                                onClick={() => setSecteursOpen(false)}
-                                className={`block px-4 py-3 text-white/60 hover:text-[#C9A84C] hover:bg-white/5 text-sm font-inter transition-all duration-200 ${
-                                  i < SECTEURS.length - 1 ? 'border-b border-white/5' : ''
-                                }`}
-                              >
-                                {secteur.nom}
-                              </Link>
+                          {getDropdownItems(link.dropdownType!).map((item, i, arr) => (
+                            <Link
+                              key={item.href}
+                              href={item.href}
+                              onClick={() => setOpenDropdown(null)}
+                              className={`block px-4 py-3 text-white/60 hover:text-[#C9A84C] hover:bg-white/5 text-sm font-inter transition-all duration-200 ${
+                                i < arr.length - 1 ? 'border-b border-white/5' : ''
+                              }`}
+                            >
+                              {item.label}
+                            </Link>
                           ))}
                         </motion.div>
                       )}
@@ -195,9 +217,9 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 bg-[#0A0A0A]/98 backdrop-blur-xl flex flex-col pt-24 pb-8 px-6 overflow-y-auto"
+            className="fixed inset-0 z-40 bg-[#0A0A0A]/98 backdrop-blur-xl flex flex-col pt-24 pb-24 px-6 overflow-y-auto"
           >
-            <nav className="flex flex-col gap-4" aria-label="Navigation mobile">
+            <nav className="flex flex-col gap-2" aria-label="Navigation mobile">
               {navLinks.map((link, i) => (
                 link.hasDropdown ? (
                   <div key={link.href}>
@@ -205,14 +227,14 @@ export default function Navbar() {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.07 }}
-                      onClick={() => setMobileSecteursOpen(!mobileSecteursOpen)}
-                      className="w-full text-left flex items-center justify-between text-white/80 hover:text-[#C9A84C] text-2xl font-playfair font-medium border-b border-white/10 pb-4 transition-colors"
+                      onClick={() => setMobileOpenDropdown(mobileOpenDropdown === link.dropdownType ? null : link.dropdownType!)}
+                      className="w-full text-left flex items-center justify-between text-white/80 hover:text-[#C9A84C] text-xl font-playfair font-medium border-b border-white/10 pb-3 transition-colors"
                     >
                       {link.label}
-                      <ChevronDown size={20} className={`transition-transform duration-200 ${mobileSecteursOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown size={20} className={`transition-transform duration-200 ${mobileOpenDropdown === link.dropdownType ? 'rotate-180' : ''}`} />
                     </motion.button>
                     <AnimatePresence>
-                      {mobileSecteursOpen && (
+                      {mobileOpenDropdown === link.dropdownType && (
                         <motion.div
                           initial={{ height: 0, opacity: 0 }}
                           animate={{ height: 'auto', opacity: 1 }}
@@ -221,15 +243,15 @@ export default function Navbar() {
                           className="overflow-hidden"
                         >
                           <div className="pl-4 pt-2 pb-3 space-y-2">
-                            {SECTEURS.map((secteur) => (
-                                <Link
-                                  key={secteur.slug}
-                                  href={`/secteurs/${secteur.slug}`}
-                                  onClick={() => setMenuOpen(false)}
-                                  className="block py-2 text-white/50 hover:text-[#C9A84C] text-base font-inter transition-colors"
-                                >
-                                  {secteur.nom}
-                                </Link>
+                            {getDropdownItems(link.dropdownType!).map((item) => (
+                              <Link
+                                key={item.href}
+                                href={item.href}
+                                onClick={() => setMenuOpen(false)}
+                                className="block py-2 text-white/50 hover:text-[#C9A84C] text-base font-inter transition-colors"
+                              >
+                                {item.label}
+                              </Link>
                             ))}
                           </div>
                         </motion.div>
@@ -243,7 +265,7 @@ export default function Navbar() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.07 }}
                     onClick={() => handleNavClick(link.href, link.isPage)}
-                    className="text-left flex items-center gap-3 text-white/80 hover:text-[#C9A84C] text-2xl font-playfair font-medium border-b border-white/10 pb-4 transition-colors"
+                    className="text-left flex items-center gap-3 text-white/80 hover:text-[#C9A84C] text-xl font-playfair font-medium border-b border-white/10 pb-3 transition-colors"
                   >
                     {link.label}
                     {link.badge && (
@@ -262,7 +284,7 @@ export default function Navbar() {
               href="https://wa.me/33756959078?text=Bonjour%2C%20je%20souhaite%20un%20devis%20pour..."
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-8 flex items-center justify-center gap-3 bg-[#C9A84C] text-[#0A0A0A] px-6 py-4 rounded-2xl text-lg font-bold btn-gold"
+              className="mt-6 flex-shrink-0 flex items-center justify-center gap-3 bg-[#C9A84C] text-[#0A0A0A] px-6 py-4 rounded-2xl text-lg font-bold btn-gold"
               aria-label="Contacter L-BOOST sur WhatsApp"
             >
               <MessageCircle size={22} />

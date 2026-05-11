@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { LucideIcon } from 'lucide-react'
 
@@ -11,6 +12,7 @@ interface ServiceCardProps {
   image: string
   imageAlt: string
   index?: number
+  href?: string
 }
 
 export default function ServiceCard({
@@ -20,8 +22,9 @@ export default function ServiceCard({
   image,
   imageAlt,
   index = 0,
+  href,
 }: ServiceCardProps) {
-  return (
+  const card = (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -31,7 +34,7 @@ export default function ServiceCard({
         y: -6,
         transition: { duration: 0.3 },
       }}
-      className="bg-white rounded-2xl overflow-hidden cursor-default group"
+      className={`bg-white rounded-2xl overflow-hidden group ${href ? 'cursor-pointer' : 'cursor-default'}`}
       style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.07)' }}
     >
       {/* Image banner */}
@@ -64,9 +67,47 @@ export default function ServiceCard({
           {description}
         </p>
 
-        {/* Bottom accent */}
-        <div className="mt-5 w-0 h-0.5 bg-gradient-to-r from-[#C9A84C] to-[#E4C46E] rounded-full group-hover:w-14 transition-all duration-500" />
+        {/* En savoir plus */}
+        {href && (
+          <div
+            className="mt-4 pt-4 flex items-center justify-between"
+            style={{ borderTop: '1px solid rgba(201,168,76,0.15)' }}
+          >
+            <span
+              className="text-[#C9A84C] text-[13px] font-semibold font-inter"
+              style={{
+                textDecoration: 'underline',
+                textDecorationStyle: 'dotted',
+                textUnderlineOffset: '4px',
+              }}
+            >
+              En savoir plus →
+            </span>
+            <div
+              className="w-7 h-7 rounded-full flex items-center justify-center group-hover:bg-[#C9A84C] group-hover:border-[#C9A84C] transition-all duration-300"
+              style={{
+                background: 'rgba(201,168,76,0.1)',
+                border: '1px solid rgba(201,168,76,0.3)',
+              }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="2.5" className="group-hover:stroke-[#0A0A0A] transition-colors">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </div>
+        )}
+
+        {/* Bottom accent (hidden when href present) */}
+        {!href && (
+          <div className="mt-5 w-0 h-0.5 bg-gradient-to-r from-[#C9A84C] to-[#E4C46E] rounded-full group-hover:w-14 transition-all duration-500" />
+        )}
       </div>
     </motion.div>
   )
+
+  if (href) {
+    return <Link href={href} className="block">{card}</Link>
+  }
+
+  return card
 }

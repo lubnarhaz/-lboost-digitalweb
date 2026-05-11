@@ -5,6 +5,7 @@ import { MessageCircle, Phone, FileText } from 'lucide-react'
 import { getWhatsAppURL, type WhatsAppContext } from '@/lib/whatsapp-messages'
 import { useContactModal } from '@/context/ContactModalContext'
 import AnimatedSection from '@/components/AnimatedSection'
+import LenaInlineCTA from '@/components/LenaInlineCTA'
 
 interface CTAContactProps {
   context?: WhatsAppContext
@@ -102,6 +103,10 @@ export default function CTAContact({
               07 56 95 90 78
             </span>
           </motion.a>
+        </div>
+
+        <div className="text-center mt-8">
+          <LenaInlineCTA message="Ou posez directement vos questions à Léna →" />
         </div>
       </div>
     </section>

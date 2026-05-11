@@ -12,6 +12,7 @@ interface PackCardProps {
   badge?: string
   featured?: boolean
   index?: number
+  installment?: string
 }
 
 export default function PackCard({
@@ -21,6 +22,7 @@ export default function PackCard({
   badge,
   featured = false,
   index = 0,
+  installment,
 }: PackCardProps) {
   const { openModal } = useContactModal()
   const ref = useRef<HTMLDivElement>(null)
@@ -117,6 +119,17 @@ export default function PackCard({
               <span className="text-white/40 text-sm mb-1 font-inter">HT</span>
             )}
           </div>
+          {installment && (
+            <div className="inline-flex items-center gap-1.5 bg-[#C9A84C]/10 border border-[#C9A84C]/20 rounded-full px-3 py-1 mt-2">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="2">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                <line x1="1" y1="10" x2="23" y2="10"/>
+              </svg>
+              <span className="text-[#C9A84C] text-xs font-inter font-medium">
+                {installment}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Divider */}

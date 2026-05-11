@@ -10,6 +10,11 @@ export type WhatsAppContext =
   | 'ecommerce'
   | 'walkin'
   | 'audit'
+  | 'tarifs'
+  | 'essentiel'
+  | 'boost'
+  | 'premium'
+  | 'leasing'
 
 const messages: Record<WhatsAppContext, string> = {
   general: 'Bonjour, je souhaite un devis pour mon projet digital.',
@@ -21,6 +26,11 @@ const messages: Record<WhatsAppContext, string> = {
   ecommerce: 'Bonjour, j\'ai une boutique en ligne et je souhaite augmenter mes ventes et fidéliser mes clients. Pouvez-vous m\'aider ?',
   walkin: 'Bonjour, je suis intéressé(e) par la carte de fidélité digitale WalKin. Pouvez-vous m\'en dire plus ?',
   audit: 'Bonjour, je souhaite bénéficier de l\'audit gratuit de ma présence digitale. Pouvez-vous m\'aider ?',
+  tarifs: 'Bonjour, je souhaite un devis personnalisé pour mon activité.',
+  essentiel: 'Bonjour, je suis intéressé par la formule Essentiel. Pouvez-vous me contacter ?',
+  boost: 'Bonjour, je suis intéressé par la formule Boost. Pouvez-vous me contacter ?',
+  premium: 'Bonjour, je suis intéressé par la formule Premium IA. Pouvez-vous me contacter ?',
+  leasing: 'Bonjour, je suis intéressé par l\'option 0€ de départ sur 24 mois. Pouvez-vous m\'expliquer ?',
 }
 
 export function getWhatsAppURL(context: WhatsAppContext = 'general'): string {

@@ -33,6 +33,7 @@ import WalletMockup from '@/components/WalletMockup'
 import Footer from '@/components/Footer'
 import AnimatedSection, { AnimatedItem } from '@/components/AnimatedSection'
 import { SECTEURS } from '@/lib/secteurs-data'
+import LenaInlineCTA from '@/components/LenaInlineCTA'
 
 // ── Typewriter ────────────────────────────────────────────────────────────────
 const TYPEWRITER_ITEMS = [
@@ -140,6 +141,7 @@ const services = [
     description: 'Logo, favicon, bannières, charte graphique complète — une identité visuelle qui vous démarque et inspire confiance.',
     image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&h=400&fit=crop',
     imageAlt: 'Design branding identité visuelle',
+    href: '/services/branding',
   },
   {
     icon: Globe,
@@ -147,6 +149,7 @@ const services = [
     description: 'Sites vitrines, e-commerce, landing pages. Développement Next.js ultra-rapide, SEO-friendly et mobile-first.',
     image: 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=600&h=400&fit=crop',
     imageAlt: 'Création site web développement',
+    href: '/services/site-web',
   },
   {
     icon: BrainCircuit,
@@ -154,6 +157,7 @@ const services = [
     description: 'n8n, intégrations API, workflows intelligents. Automatisez vos processus métier et gagnez un temps précieux.',
     image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&h=400&fit=crop',
     imageAlt: 'Intelligence artificielle automatisation',
+    href: '/services/automatisations-ia',
   },
   {
     icon: Bot,
@@ -161,6 +165,7 @@ const services = [
     description: 'Assistants conversationnels sur-mesure disponibles 24h/7j. FAQ, prise de RDV, qualification de leads automatique.',
     image: 'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=600&h=400&fit=crop',
     imageAlt: 'Chatbot agent IA conversationnel',
+    href: '/services/agents-chatbots',
   },
   {
     icon: CreditCard,
@@ -168,6 +173,7 @@ const services = [
     description: 'Compatible Apple & Google Wallet. Push notifications personnalisées via WalKin pour fidéliser vos clients.',
     image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop',
     imageAlt: 'Carte fidélité digitale paiement NFC',
+    href: '/services/carte-fidelite',
   },
   {
     icon: Users,
@@ -175,6 +181,7 @@ const services = [
     description: 'Instagram, Facebook, LinkedIn, TikTok. Stratégie éditoriale, création de contenu, croissance organique.',
     image: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=600&h=400&fit=crop',
     imageAlt: 'Community management réseaux sociaux',
+    href: '/services/community-management',
   },
 ]
 
@@ -199,6 +206,7 @@ const packs = [
     price: '2 490€',
     badge: 'Le plus populaire ★',
     featured: true,
+    installment: 'ou 3 × 830€ HT sans frais',
     features: [
       'Tout le Pack Starter',
       'Charte graphique complète (PDF livrable)',
@@ -214,6 +222,7 @@ const packs = [
     price: 'Sur devis',
     badge: 'Solution complète',
     featured: false,
+    installment: 'Paiement en 3 fois disponible',
     features: [
       'Tout le Pack Business',
       'Carte fidélité digitale WalKin + push notifications',
@@ -396,6 +405,10 @@ export default function HomePage() {
   const [inlineForm, setInlineForm] = useState({
     nom: '', entreprise: '', email: '', telephone: '',
     typeCommerce: '', nbClients: '', message: '',
+    instagram: '', facebook: '', tiktok: '', linkedin: '',
+  })
+  const [inlineSocialsChecked, setInlineSocialsChecked] = useState({
+    instagram: false, facebook: false, tiktok: false, linkedin: false,
   })
   const [inlineStatus, setInlineStatus] = useState<InlineStatus>('idle')
   const [inlineErrors, setInlineErrors] = useState<Record<string, string>>({})
@@ -434,7 +447,8 @@ export default function HomePage() {
         body: JSON.stringify(inlineForm),
       })
       setInlineStatus('success')
-      setInlineForm({ nom: '', entreprise: '', email: '', telephone: '', typeCommerce: '', nbClients: '', message: '' })
+      setInlineForm({ nom: '', entreprise: '', email: '', telephone: '', typeCommerce: '', nbClients: '', message: '', instagram: '', facebook: '', tiktok: '', linkedin: '' })
+      setInlineSocialsChecked({ instagram: false, facebook: false, tiktok: false, linkedin: false })
     } catch {
       setInlineStatus('error')
     }
@@ -560,6 +574,8 @@ export default function HomePage() {
               Parler à un expert sur WhatsApp →
             </motion.a>
           </motion.div>
+
+          <LenaInlineCTA message="Ou posez vos questions à Léna, notre conseillère →" />
         </div>
 
         {/* Scroll indicator */}
@@ -659,16 +675,6 @@ export default function HomePage() {
                         unoptimized
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/40 to-transparent" />
-                      {/* Icon badge */}
-                      <div
-                        className="absolute top-4 left-4 w-10 h-10 rounded-lg flex items-center justify-center backdrop-blur-sm"
-                        style={{
-                          background: `${secteur.couleurAccent}20`,
-                          border: `1px solid ${secteur.couleurAccent}40`,
-                        }}
-                      >
-                        <Icon size={18} style={{ color: secteur.couleurAccent }} />
-                      </div>
                     </div>
 
                     {/* Content */}
@@ -736,6 +742,20 @@ export default function HomePage() {
               <MessageCircle size={16} />
               Demander un devis sur-mesure
             </motion.button>
+            <LenaInlineCTA message="Besoin d'aide pour choisir ? Demandez à Léna →" />
+
+            {/* Voir nos abonnements */}
+            <div className="text-center mt-8">
+              <Link
+                href="/tarifs"
+                className="inline-flex items-center gap-2.5 border border-[#C9A84C]/40 text-[#C9A84C] hover:bg-[#C9A84C]/10 px-9 py-3.5 rounded-lg font-inter font-semibold text-[15px] tracking-wide transition-all duration-300"
+              >
+                Voir nos abonnements et possibilités de paiement →
+              </Link>
+              <p className="text-[#6B7280] text-[13px] font-inter mt-2.5">
+                Paiement en 3 fois disponible · Option 0€ à la signature
+              </p>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -1128,6 +1148,8 @@ export default function HomePage() {
                 07 56 95 90 78
               </p>
 
+              <LenaInlineCTA message="Préférez discuter avec Léna en direct ? →" />
+
               {/* Separator */}
               <p className="text-gray-500 my-8 font-inter text-sm tracking-wide">
                 — ou remplissez le formulaire —
@@ -1240,6 +1262,58 @@ export default function HomePage() {
                           ))}
                         </select>
                         {inlineErrors.nbClients && <p className="text-red-400 text-[11px] mt-1 pl-1">{inlineErrors.nbClients}</p>}
+                      </div>
+                    </div>
+
+                    {/* Réseaux sociaux */}
+                    <div>
+                      <label className="block text-gray-300 text-sm font-medium mb-1.5">
+                        Avez-vous des comptes réseaux sociaux ?
+                      </label>
+                      <div className="space-y-2.5">
+                        {([
+                          { key: 'instagram' as const, label: 'Instagram', placeholder: '@votre_compte' },
+                          { key: 'facebook' as const, label: 'Facebook', placeholder: 'Nom de votre page' },
+                          { key: 'tiktok' as const, label: 'TikTok', placeholder: '@votre_compte' },
+                          { key: 'linkedin' as const, label: 'LinkedIn', placeholder: 'URL ou nom du profil' },
+                        ]).map((social) => (
+                          <div key={social.key}>
+                            <label className="flex items-center gap-2.5 cursor-pointer group">
+                              <div
+                                onClick={() => {
+                                  setInlineSocialsChecked((prev) => ({ ...prev, [social.key]: !prev[social.key] }))
+                                  if (inlineSocialsChecked[social.key]) {
+                                    setInlineForm((prev) => ({ ...prev, [social.key]: '' }))
+                                  }
+                                }}
+                                className={`w-5 h-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-all duration-200 cursor-pointer ${
+                                  inlineSocialsChecked[social.key]
+                                    ? 'bg-[#C9A84C] border-[#C9A84C]'
+                                    : 'bg-white/[0.04] border-white/20 group-hover:border-white/40'
+                                }`}
+                              >
+                                {inlineSocialsChecked[social.key] && (
+                                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                    <path d="M2.5 6L5 8.5L9.5 3.5" stroke="#0A0A0A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                  </svg>
+                                )}
+                              </div>
+                              <span className="text-white/60 text-sm font-inter">{social.label}</span>
+                            </label>
+                            {inlineSocialsChecked[social.key] && (
+                              <div className="mt-1.5 ml-7">
+                                <input
+                                  type="text"
+                                  name={social.key}
+                                  placeholder={social.placeholder}
+                                  value={inlineForm[social.key]}
+                                  onChange={handleInlineChange}
+                                  className={inlineInputClass(social.key)}
+                                />
+                              </div>
+                            )}
+                          </div>
+                        ))}
                       </div>
                     </div>
 

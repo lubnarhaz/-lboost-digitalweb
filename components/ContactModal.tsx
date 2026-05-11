@@ -103,6 +103,16 @@ export default function ContactModal({
     typeCommerce: '',
     nbClients: '',
     message: '',
+    instagram: '',
+    facebook: '',
+    tiktok: '',
+    linkedin: '',
+  })
+  const [socialsChecked, setSocialsChecked] = useState({
+    instagram: false,
+    facebook: false,
+    tiktok: false,
+    linkedin: false,
   })
 
   useEffect(() => {
@@ -163,7 +173,8 @@ export default function ContactModal({
         body: JSON.stringify(form),
       })
       setStatus('success')
-      setForm({ nom: '', entreprise: '', email: '', telephone: '', typeCommerce: '', nbClients: '', message: '' })
+      setForm({ nom: '', entreprise: '', email: '', telephone: '', typeCommerce: '', nbClients: '', message: '', instagram: '', facebook: '', tiktok: '', linkedin: '' })
+      setSocialsChecked({ instagram: false, facebook: false, tiktok: false, linkedin: false })
     } catch {
       setStatus('error')
     }
@@ -597,6 +608,64 @@ export default function ContactModal({
                               ))}
                             </select>
                             {errors.nbClients && <p className="text-red-400 text-[11px] mt-1 font-inter pl-1">{errors.nbClients}</p>}
+                          </div>
+                        </div>
+
+                        {/* Réseaux sociaux */}
+                        <div>
+                          <label className={labelClass}>
+                            Avez-vous des comptes réseaux sociaux ?
+                          </label>
+                          <div className="space-y-2.5 mt-1">
+                            {([
+                              { key: 'instagram' as const, label: 'Instagram', placeholder: '@votre_compte' },
+                              { key: 'facebook' as const, label: 'Facebook', placeholder: 'Nom de votre page' },
+                              { key: 'tiktok' as const, label: 'TikTok', placeholder: '@votre_compte' },
+                              { key: 'linkedin' as const, label: 'LinkedIn', placeholder: 'URL ou nom du profil' },
+                            ]).map((social) => (
+                              <div key={social.key}>
+                                <label className="flex items-center gap-2.5 cursor-pointer group">
+                                  <div
+                                    onClick={() => {
+                                      setSocialsChecked((prev) => ({ ...prev, [social.key]: !prev[social.key] }))
+                                      if (socialsChecked[social.key]) {
+                                        setForm((prev) => ({ ...prev, [social.key]: '' }))
+                                      }
+                                    }}
+                                    className={`w-5 h-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-all duration-200 cursor-pointer ${
+                                      socialsChecked[social.key]
+                                        ? 'bg-[#C9A84C] border-[#C9A84C]'
+                                        : 'bg-white/[0.04] border-white/15 group-hover:border-white/30'
+                                    }`}
+                                  >
+                                    {socialsChecked[social.key] && (
+                                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                        <path d="M2.5 6L5 8.5L9.5 3.5" stroke="#0A0A0A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                      </svg>
+                                    )}
+                                  </div>
+                                  <span className="text-white/60 text-sm font-inter">{social.label}</span>
+                                </label>
+                                {socialsChecked[social.key] && (
+                                  <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="mt-1.5 ml-7"
+                                  >
+                                    <input
+                                      type="text"
+                                      name={social.key}
+                                      placeholder={social.placeholder}
+                                      value={form[social.key]}
+                                      onChange={handleChange}
+                                      className={inputClass(social.key)}
+                                    />
+                                  </motion.div>
+                                )}
+                              </div>
+                            ))}
                           </div>
                         </div>
 

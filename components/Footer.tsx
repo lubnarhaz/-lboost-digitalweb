@@ -9,15 +9,16 @@ import { SECTEURS } from '@/lib/secteurs-data'
 
 const footerLinks = {
   services: [
-    { label: 'Branding Complet', href: '#services' },
-    { label: 'Création Site Web', href: '#services' },
-    { label: 'Automatisations IA', href: '#services' },
-    { label: 'Chatbots IA', href: '#services' },
-    { label: 'Carte Fidélité Digitale', href: '#services' },
-    { label: 'Community Management', href: '#services' },
+    { label: 'Branding Complet', href: '/services/branding', isPage: true },
+    { label: 'Création Site Web', href: '/services/site-web', isPage: true },
+    { label: 'Automatisations IA', href: '/services/automatisations-ia', isPage: true },
+    { label: 'Agents & Chatbots IA', href: '/services/agents-chatbots', isPage: true },
+    { label: 'Carte Fidélité Digitale', href: '/walkin', isPage: true },
+    { label: 'Community Management', href: '/services/community-management', isPage: true },
   ],
   company: [
     { label: 'Nos Packs', href: '#packs' },
+    { label: 'Nos tarifs', href: '/tarifs', isPage: true },
     { label: 'Notre Processus', href: '#processus' },
     { label: 'Témoignages', href: '#temoignages' },
     { label: 'FAQ', href: '#faq' },
@@ -126,12 +127,12 @@ export default function Footer() {
             <ul className="space-y-3">
               {footerLinks.services.map((link) => (
                 <li key={link.label}>
-                  <button
-                    onClick={() => handleScroll(link.href)}
-                    className="text-white/40 hover:text-[#C9A84C] text-sm font-inter transition-colors duration-200 text-left"
+                  <Link
+                    href={link.href}
+                    className="text-white/40 hover:text-[#C9A84C] text-sm font-inter transition-colors duration-200"
                   >
                     {link.label}
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>

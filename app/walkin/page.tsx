@@ -13,6 +13,7 @@ import {
 import Navbar from '@/components/Navbar'
 import CountUpNumber from '@/components/CountUpNumber'
 import { useContactModal } from '@/context/ContactModalContext'
+import LenaInlineCTA from '@/components/LenaInlineCTA'
 import AnimatedSection from '@/components/AnimatedSection'
 import WalletCard from '@/components/walkin/WalletCard'
 import PushNotificationMockup from '@/components/walkin/PushNotificationMockup'
@@ -509,6 +510,7 @@ export default function WalkinPage() {
                   Voir comment ça marche <ChevronDown size={18} />
                 </button>
               </motion.div>
+              <LenaInlineCTA message="Des questions sur WalKin ? Demandez à Léna →" />
             </div>
 
             {/* Right — phone mockup */}
@@ -857,6 +859,7 @@ export default function WalkinPage() {
               <MessageCircle size={16} />
               En parler sur WhatsApp →
             </motion.a>
+            <LenaInlineCTA message="Besoin d'aide pour choisir ? Demandez à Léna →" />
           </div>
         </div>
       </section>
