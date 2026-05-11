@@ -14,13 +14,13 @@ export const metadata: Metadata = {
     'fidélisation numérique Troyes',
   ],
   alternates: {
-    canonical: 'https://lboost-digitalweb.fr/walkin',
+    canonical: 'https://www.lboost-digitalweb.fr/walkin',
   },
   openGraph: {
     title: 'WalKin — Carte de Fidélité Digitale | L-BOOST Troyes',
     description:
       'Solution de fidélisation pour commerces à Troyes. Carte digitale Apple/Google Wallet, push notifications, analytics temps réel.',
-    url: 'https://lboost-digitalweb.fr/walkin',
+    url: 'https://www.lboost-digitalweb.fr/walkin',
     images: [
       {
         url: '/og-walkin.jpg',

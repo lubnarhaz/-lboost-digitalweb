@@ -5,7 +5,7 @@ import Footer from '@/components/Footer'
 export const metadata: Metadata = {
   title: 'Politique de Confidentialité',
   description: 'Politique de confidentialité et protection des données personnelles — L-BOOST Digital Web, Troyes.',
-  alternates: { canonical: 'https://lboost-digitalweb.fr/politique-de-confidentialite' },
+  alternates: { canonical: 'https://www.lboost-digitalweb.fr/politique-de-confidentialite' },
 }
 
 export default function PolitiqueConfidentialite() {

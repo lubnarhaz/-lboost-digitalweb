@@ -15,12 +15,12 @@ export const metadata: Metadata = {
     'blog digital Troyes',
   ],
   alternates: {
-    canonical: 'https://lboost-digitalweb.fr/blog',
+    canonical: 'https://www.lboost-digitalweb.fr/blog',
   },
   openGraph: {
     title: 'Blog — Conseils Digitaux pour Entreprises à Troyes | L-BOOST',
     description: 'Conseils en création de sites web, SEO local à Troyes, branding et fidélisation client.',
-    url: 'https://lboost-digitalweb.fr/blog',
+    url: 'https://www.lboost-digitalweb.fr/blog',
   },
 }
 

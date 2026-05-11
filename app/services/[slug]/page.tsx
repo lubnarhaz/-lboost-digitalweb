@@ -56,5 +56,21 @@ export default function ServicePage({ params }: Props) {
   const service = getServiceBySlug(params.slug)
   if (!service) notFound()
 
-  return <ServicePageClient />
+  const baseUrl = 'https://www.lboost-digitalweb.fr'
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      { '@type': 'ListItem', 'position': 1, 'name': 'Accueil', 'item': baseUrl },
+      { '@type': 'ListItem', 'position': 2, 'name': 'Services', 'item': `${baseUrl}/services` },
+      { '@type': 'ListItem', 'position': 3, 'name': service.nom, 'item': `${baseUrl}/services/${service.slug}` },
+    ],
+  }
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <ServicePageClient />
+    </>
+  )
 }

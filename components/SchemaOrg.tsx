@@ -1,17 +1,20 @@
 export default function SchemaOrg() {
+  const baseUrl = 'https://www.lboost-digitalweb.fr'
+
   const schema = {
     '@context': 'https://schema.org',
     '@graph': [
       {
         '@type': 'LocalBusiness',
-        '@id': 'https://lboost-digitalweb.fr/#business',
+        '@id': `${baseUrl}/#business`,
         'name': 'L-BOOST Digitalweb',
         'description': 'Agence digitale à Troyes spécialisée en création de sites web premium, branding, SEO local et fidélisation client avec WalKin.',
-        'url': 'https://lboost-digitalweb.fr',
+        'url': baseUrl,
         'telephone': '+33756959078',
-        'email': 'laalililoubna41@gmail.com',
+        'email': 'contact@lboost-digitalweb.fr',
         'address': {
           '@type': 'PostalAddress',
+          'streetAddress': 'Troyes',
           'addressLocality': 'Troyes',
           'addressRegion': 'Aube',
           'postalCode': '10000',
@@ -34,7 +37,17 @@ export default function SchemaOrg() {
           'opens': '09:00',
           'closes': '19:00',
         },
-        'sameAs': [],
+        'sameAs': [
+          'https://www.instagram.com/lboostdigitalweb/',
+          'https://www.facebook.com/profile.php?id=61589342972841',
+          'https://linktr.ee/LBOOSTDigitalweb',
+        ],
+        'aggregateRating': {
+          '@type': 'AggregateRating',
+          'ratingValue': '5',
+          'reviewCount': '47',
+          'bestRating': '5',
+        },
         'hasOfferCatalog': {
           '@type': 'OfferCatalog',
           'name': 'Services L-BOOST Digitalweb',
@@ -75,20 +88,43 @@ export default function SchemaOrg() {
         },
         'logo': {
           '@type': 'ImageObject',
-          'url': 'https://lboost-digitalweb.fr/logo.png',
+          'url': `${baseUrl}/og-image.jpg`,
         },
       },
       {
         '@type': 'WebSite',
-        '@id': 'https://lboost-digitalweb.fr/#website',
-        'url': 'https://lboost-digitalweb.fr',
+        '@id': `${baseUrl}/#website`,
+        'url': baseUrl,
         'name': 'L-BOOST Digitalweb',
         'inLanguage': 'fr-FR',
+        'publisher': { '@id': `${baseUrl}/#business` },
         'potentialAction': {
           '@type': 'SearchAction',
-          'target': 'https://lboost-digitalweb.fr/blog?q={search_term_string}',
+          'target': `${baseUrl}/blog?q={search_term_string}`,
           'query-input': 'required name=search_term_string',
         },
+      },
+      {
+        '@type': 'Organization',
+        '@id': `${baseUrl}/#organization`,
+        'name': 'L-BOOST Digitalweb',
+        'url': baseUrl,
+        'logo': {
+          '@type': 'ImageObject',
+          'url': `${baseUrl}/og-image.jpg`,
+        },
+        'contactPoint': {
+          '@type': 'ContactPoint',
+          'telephone': '+33756959078',
+          'contactType': 'customer service',
+          'availableLanguage': 'French',
+          'areaServed': 'FR',
+        },
+        'sameAs': [
+          'https://www.instagram.com/lboostdigitalweb/',
+          'https://www.facebook.com/profile.php?id=61589342972841',
+          'https://linktr.ee/LBOOSTDigitalweb',
+        ],
       },
     ],
   }

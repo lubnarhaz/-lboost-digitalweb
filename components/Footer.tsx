@@ -218,7 +218,7 @@ export default function Footer() {
         {/* Divider */}
         <div className="border-t border-white/5 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-white/25 text-xs font-inter text-center sm:text-left">
-            © 2025 L-BOOST DigitalWeb — Tous droits réservés
+            © {new Date().getFullYear()} L-BOOST DigitalWeb — Tous droits réservés
           </p>
           <p className="text-white/20 text-xs font-inter">
             Fait avec ❤ en France

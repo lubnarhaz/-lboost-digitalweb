@@ -18,5 +18,19 @@ export const metadata: Metadata = {
 }
 
 export default function TarifsPage() {
-  return <TarifsPageClient />
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      { '@type': 'ListItem', 'position': 1, 'name': 'Accueil', 'item': 'https://www.lboost-digitalweb.fr' },
+      { '@type': 'ListItem', 'position': 2, 'name': 'Tarifs', 'item': 'https://www.lboost-digitalweb.fr/tarifs' },
+    ],
+  }
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <TarifsPageClient />
+    </>
+  )
 }

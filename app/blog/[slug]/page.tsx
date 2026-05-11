@@ -18,11 +18,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: article.title,
     description: article.metaDescription,
-    alternates: { canonical: `https://lboost-digitalweb.fr/blog/${article.slug}` },
+    alternates: { canonical: `https://www.lboost-digitalweb.fr/blog/${article.slug}` },
     openGraph: {
       title: article.title,
       description: article.metaDescription,
-      url: `https://lboost-digitalweb.fr/blog/${article.slug}`,
+      url: `https://www.lboost-digitalweb.fr/blog/${article.slug}`,
       images: [{ url: article.image, width: 1200, height: 630, alt: article.title }],
       type: 'article',
     },
@@ -838,25 +838,41 @@ export default function ArticlePage({ params }: Props) {
 
   const others = articles.filter((a) => a.slug !== article.slug)
 
+  const baseUrl = 'https://www.lboost-digitalweb.fr'
+
   const articleSchema = {
     '@context': 'https://schema.org',
-    '@type': 'Article',
+    '@type': 'BlogPosting',
     'headline': article.title,
     'datePublished': article.date,
-    'author': { '@type': 'Organization', 'name': 'L-BOOST Digitalweb' },
+    'dateModified': article.date,
+    'author': { '@type': 'Organization', 'name': 'L-BOOST Digitalweb', 'url': baseUrl },
     'publisher': {
       '@type': 'Organization',
       'name': 'L-BOOST Digitalweb',
-      'logo': { '@type': 'ImageObject', 'url': 'https://lboost-digitalweb.fr/logo.png' },
+      'logo': { '@type': 'ImageObject', 'url': `${baseUrl}/og-image.jpg` },
     },
     'image': article.image,
-    'url': `https://lboost-digitalweb.fr/blog/${article.slug}`,
+    'url': `${baseUrl}/blog/${article.slug}`,
     'description': article.metaDescription,
+    'mainEntityOfPage': { '@type': 'WebPage', '@id': `${baseUrl}/blog/${article.slug}` },
+    'inLanguage': 'fr-FR',
+  }
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      { '@type': 'ListItem', 'position': 1, 'name': 'Accueil', 'item': baseUrl },
+      { '@type': 'ListItem', 'position': 2, 'name': 'Blog', 'item': `${baseUrl}/blog` },
+      { '@type': 'ListItem', 'position': 3, 'name': article.title, 'item': `${baseUrl}/blog/${article.slug}` },
+    ],
   }
 
   return (
     <main className="min-h-screen bg-[#F8F7F4]">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
       {/* Hero */}
       <section className="bg-[#0A0A0A] pt-24 pb-0">

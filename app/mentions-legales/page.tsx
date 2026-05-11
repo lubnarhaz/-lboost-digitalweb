@@ -5,7 +5,7 @@ import Footer from '@/components/Footer'
 export const metadata: Metadata = {
   title: 'Mentions Légales',
   description: 'Mentions légales du site lboost-digitalweb.fr — L-BOOST Digital Web, agence web à Troyes.',
-  alternates: { canonical: 'https://lboost-digitalweb.fr/mentions-legales' },
+  alternates: { canonical: 'https://www.lboost-digitalweb.fr/mentions-legales' },
 }
 
 export default function MentionsLegales() {

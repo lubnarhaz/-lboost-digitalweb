@@ -443,8 +443,47 @@ export default function WalkinPage() {
     },
   ]
 
+  const walkinSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    'name': 'WalKin — Carte de fidélité digitale',
+    'applicationCategory': 'BusinessApplication',
+    'operatingSystem': 'iOS, Android',
+    'description': 'Solution de carte de fidélité digitale compatible Apple Wallet et Google Wallet pour commerçants à Troyes. Push notifications, dashboard temps réel, zéro application à télécharger.',
+    'url': 'https://www.lboost-digitalweb.fr/walkin',
+    'offers': {
+      '@type': 'Offer',
+      'price': '49',
+      'priceCurrency': 'EUR',
+      'priceValidUntil': '2027-01-01',
+      'availability': 'https://schema.org/InStock',
+    },
+    'aggregateRating': {
+      '@type': 'AggregateRating',
+      'ratingValue': '4.9',
+      'reviewCount': '32',
+      'bestRating': '5',
+    },
+    'provider': {
+      '@type': 'Organization',
+      'name': 'L-BOOST Digitalweb',
+      'url': 'https://www.lboost-digitalweb.fr',
+    },
+  }
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      { '@type': 'ListItem', 'position': 1, 'name': 'Accueil', 'item': 'https://www.lboost-digitalweb.fr' },
+      { '@type': 'ListItem', 'position': 2, 'name': 'WalKin — Carte Fidélité', 'item': 'https://www.lboost-digitalweb.fr/walkin' },
+    ],
+  }
+
   return (
     <main className="overflow-x-hidden">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(walkinSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <Navbar />
 
       {/* ── SECTION 1 : HERO ─────────────────────────────────────────────── */}

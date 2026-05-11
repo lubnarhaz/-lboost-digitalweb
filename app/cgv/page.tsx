@@ -5,7 +5,7 @@ import Footer from '@/components/Footer'
 export const metadata: Metadata = {
   title: 'Conditions Générales de Vente',
   description: 'Conditions générales de vente des prestations de L-BOOST Digital Web, agence web à Troyes.',
-  alternates: { canonical: 'https://lboost-digitalweb.fr/cgv' },
+  alternates: { canonical: 'https://www.lboost-digitalweb.fr/cgv' },
 }
 
 export default function CGV() {
