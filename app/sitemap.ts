@@ -1,8 +1,24 @@
 import { MetadataRoute } from 'next'
+import { SERVICES } from '@/lib/services-data'
+import { SECTEURS } from '@/lib/secteurs-data'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://www.lboost-digitalweb.fr'
   const lastModified = new Date()
+
+  const serviceUrls: MetadataRoute.Sitemap = SERVICES.map((service) => ({
+    url: `${baseUrl}/services/${service.slug}`,
+    lastModified,
+    changeFrequency: 'monthly' as const,
+    priority: 0.8,
+  }))
+
+  const secteurUrls: MetadataRoute.Sitemap = SECTEURS.map((secteur) => ({
+    url: `${baseUrl}/secteurs/${secteur.slug}`,
+    lastModified,
+    changeFrequency: 'monthly' as const,
+    priority: 0.8,
+  }))
 
   return [
     {
@@ -12,11 +28,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1.0,
     },
     {
+      url: `${baseUrl}/tarifs`,
+      lastModified,
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/walkin`,
       lastModified,
       changeFrequency: 'monthly',
       priority: 0.9,
     },
+    ...serviceUrls,
+    ...secteurUrls,
     {
       url: `${baseUrl}/blog`,
       lastModified,
