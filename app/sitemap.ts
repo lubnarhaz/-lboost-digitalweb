@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
 import { SERVICES } from '@/lib/services-data'
 import { SECTEURS } from '@/lib/secteurs-data'
+import { articles } from '@/lib/articles'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://www.lboost-digitalweb.fr'
@@ -47,24 +48,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.8,
     },
-    {
-      url: `${baseUrl}/blog/agence-web-troyes`,
+    ...articles.map((article) => ({
+      url: `${baseUrl}/blog/${article.slug}`,
       lastModified,
-      changeFrequency: 'monthly',
+      changeFrequency: 'monthly' as const,
       priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/blog/seo-local-troyes`,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/blog/carte-fidelite-digitale-commercants-troyes`,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
+    })),
     {
       url: `${baseUrl}/mentions-legales`,
       lastModified,
