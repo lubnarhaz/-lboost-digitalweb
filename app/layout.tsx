@@ -5,6 +5,7 @@ import './globals.css'
 import { ContactModalProvider } from '@/context/ContactModalContext'
 import SchemaOrg from '@/components/SchemaOrg'
 import MetaPixel from '@/components/MetaPixel'
+import GoogleAnalytics from '@/components/GoogleAnalytics'
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -99,6 +100,7 @@ export default function RootLayout({
         <meta name="geo.position" content="48.2973;4.0744" />
         <meta name="ICBM" content="48.2973, 4.0744" />
         <SchemaOrg />
+        <GoogleAnalytics />
         <Script id="meta-pixel" strategy="afterInteractive">
           {`
             !function(f,b,e,v,n,t,s)
